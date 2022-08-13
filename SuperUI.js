@@ -56,7 +56,7 @@ const UI = (() => {
     function genAttrs(names) {
         return names.map(name =>({
             /**
-             * @param {string} value
+             * @param {any} value
              * @returns {Attr<{}>}
              */
             is(value) {
@@ -77,25 +77,16 @@ const UI = (() => {
      * @template {{}} T
      * @param {string} el
      * @param {Attr<T>[]} attrs 
-     * @param  {...Renderer<T>} children 
+     * @param {...Renderer<T>} children 
      * @returns {Renderer<T>}
      */
     function $(el, attrs = [], ...children) {
         /**
-         * @param {T} data
          * @param {Element} el
          * @param {Map<string, string>} current
+         * @param {Map<string, string>} $new
          */
-        function updateAttrs(data, el, current) {
-            const a = attrs.reduce((a, attr) => ({...a, ...attr(data)}), {})
-            /**
-             * @type {Map<string, string>}
-             */
-            const $new = new Map()
-            for (const k of Object.keys(a)) if (a == 0 ? true : a) {
-                const v = a[k]
-                $new.set(k, v == true ? k : `${v}`)
-            }
+        function updateAttrs(el, current, $new) {
             for (const k of current.keys()) {
                 if ($new.has(k)) {
                     const v = $new.get(k)
@@ -116,17 +107,76 @@ const UI = (() => {
                 }
             }
         }
+        /**
+         * @param {Element} el
+         * @param {Map<string, (ev: any) => void>} current
+         * @param {Map<string, (ev: any) => void>} $new
+         */
+        function updateEvents(el, current, $new) {
+            for (const k of current.keys()) {
+                if ($new.has(k)) {
+                    const v = $new.get(k)
+                    if (current.get(k) != v) {
+                        el.removeEventListener(k, current.get(k))
+                        el.addEventListener(k, v)
+                        current.set(k, v)
+                    }
+                } else {
+                    el.removeEventListener(k, current.get(k))
+                    current.delete(k)
+                }
+            }
+            for (const k of $new.keys()) {
+                if (!current.has(k)) {
+                    const v = $new.get(k)
+                    el.addEventListener(k, v)
+                    current.set(k, v)
+                }
+            }
+        }
+        /**
+         * @param {T} data
+         * @param {Element} el
+         * @param {Map<string, string>} currentAttrs
+         * @param {Map<string, (ev: any) => void>} currentEvents
+         */
+        function updateProps(data, el, currentAttrs, currentEvents) {
+            const a = attrs.reduce((a, attr) => ({...a, ...attr(data)}), {})
+            /**
+             * @type {Map<string, string>}
+             */
+            const newAttrs = new Map()
+            /**
+             * @type {Map<string, (ev: any) => void>}
+             */
+            const newEvents = new Map()
+            for (const k of Object.keys(a)) if (a == 0 ? true : a) {
+                const v = a[k]
+                if (k.startsWith('on') && (typeof v) == 'function') {
+                    newEvents.set(k.slice(2), v)
+                } else {
+                    newAttrs.set(k, v == true ? k : `${v}`)
+                }
+            }
+            updateAttrs(el, currentAttrs, newAttrs)
+            updateEvents(el, currentEvents, newEvents)
+        }
         return (root, data) => {
             const e = document.createElement(el)
             /**
-             * @type {{Map<string, string>}}
+             * @type {Map<string, string>}
              */
-            const current = new Map()
-            updateAttrs(data(), e, current)
+            const currentAttrs = new Map()
+             /**
+             * @type {Map<string, (ev: any) => void>}
+             */
+            const currentEvents = new Map()
+            updateProps(data(), e, currentAttrs, currentEvents)
             const childNodes = children.map(c => c(e, data))
             root.appendChild(e)
             return {
                 update() {
+                    updateProps(data(), e, currentAttrs, currentEvents)
                     childNodes.forEach(c => c.update())
                 },
                 unmount() {
