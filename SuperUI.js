@@ -5,8 +5,9 @@ const UI = (() => {
      */
     function noop() {}
     /**
+     * @template {{}} T
      * @param {string} str
-     * @returns {Renderer<{}>}
+     * @returns {Renderer<T>}
      */
     function t(str) {
         return root => {
@@ -186,6 +187,85 @@ const UI = (() => {
             }
         }
     }
+    function safe_eq(x, y) {
+        if (x === y) return true
+        if (
+            (typeof x == 'object' && x != null) &&
+            (typeof y == 'object' && y != null)
+        ) {
+            if (Object.keys(x).length != Object.keys(y).length) return false
+            for (const prop in x) {
+                if (Object.hasOwnProperty.call(x, prop) && Object.hasOwnProperty.call(y, prop)) {
+                    if (!safe_eq(x[prop], y[prop])) return false
+                } else return false
+            }
+            return true
+        }
+        return false
+    }
+    /**
+     * @template {{}} TProps
+     * @template {{}} TData
+     * @typedef {(ctx: {props: TProps, update(): void}) => {data?: () => TData, mounted?: () => () => void}} Factory
+     */
+    /**
+     * @template {{}} TProps
+     * @template {{}} TData
+     * @param {Renderer<TData>} renderer
+     * @param {Factory<TProps, TData>} factory
+     */
+    function Component(renderer, factory) {
+        /**
+         * @template {{}} T
+         * @param {Attr<T>[]} attrs
+         * @returns {Renderer<T>}
+         */
+        return function render(attrs = []) {
+            /**
+             * @param {T} data
+             * @returns {TProps}
+             */
+            function getProps(data) {
+                return attrs.reduce((a, attr) => ({...a, ...attr(data)}), {})
+            }
+            return (root, data) => {
+                let update = () => {}, props = getProps(data())
+                let comp = factory({
+                    props,
+                    update: () => update(),
+                })
+                const compData = () => {
+                    const {data = () => ({})} = comp
+                    return data()
+                }
+                update = () => rendered.update()
+                function mounted() {
+                    const { mounted = () => () => {} } = comp
+                    return mounted()
+                }
+                let rendered = renderer(root, compData), unmount = mounted()
+                return {
+                    unmount() {
+                        unmount()
+                        rendered.unmount()
+                    },
+                    update() {
+                        const newProps = getProps(data())
+                        if (!safe_eq(props, newProps)) {
+                            props = newProps
+                            unmount()
+                            comp = factory({
+                                props,
+                                update,
+                            })
+                            update()
+                            unmount = mounted()
+                        }
+                    },
+                }
+            }
+        }
+    }
 
     /**
      * @param {Renderer<{}>} renderer
@@ -203,5 +283,6 @@ const UI = (() => {
         t,
         mount,
         genAttrs,
+        Component,
     }
 })()
