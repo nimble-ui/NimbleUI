@@ -20,7 +20,7 @@ NimbleUI has a basic concept: the renderer. A renderer is a function that takes 
     return {
         update() {
             // Step 2: Update the child node as needed.
-        }
+        },
         unmount() {
             // Step 2: Clean up and remove the child node from `root`.
         }
