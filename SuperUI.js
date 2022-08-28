@@ -1,13 +1,11 @@
 const UI = (() => {
     /**
-     * @template {{}} T
-     * @typedef {(root: Node, data: () => T)=>{update(): void, unmount(): void}} Renderer
+     * @typedef {(root: Node)=>{update(): void, unmount(): void}} Renderer
      */
     function noop() {}
     /**
-     * @template {{}} T
      * @param {string} str
-     * @returns {Renderer<T>}
+     * @returns {Renderer}
      */
     function t(str) {
         return root => {
@@ -23,13 +21,12 @@ const UI = (() => {
     }
 
     /**
-     * @template {{}} T
-     * @param {(data: T) => any} sel
-     * @returns {Renderer<T>}
+     * @param {() => any} sel
+     * @returns {Renderer}
      */
     function _(sel) {
-        return (root, data) => {
-            let prev = `${sel(data())}`
+        return (root) => {
+            let prev = `${sel()}`
             const txt = document.createTextNode(prev)
             root.appendChild(txt)
             return {
@@ -37,7 +34,7 @@ const UI = (() => {
                     root.removeChild(txt)
                 },
                 update() {
-                    const current = `${sel(data())}`
+                    const current = `${sel()}`
                     if (current != prev) txt.textContent = prev = current
                 },
             }
@@ -48,8 +45,7 @@ const UI = (() => {
      * @typedef {{'this': (el: Node) => void, 'class': string[], style: {[key: string]: any}, [key: string]: any}} Attr_
      */
     /**
-     * @template {{}} T
-     * @typedef {(data: T) => Attr_} Attr
+     * @typedef {() => Attr_} Attr
      */
     /**
      * @param {string[]} names
@@ -58,18 +54,17 @@ const UI = (() => {
         return names.map(name =>({
             /**
              * @param {any} value
-             * @returns {Attr<{}>}
+             * @returns {Attr}
              */
             is(value) {
                 return () => ({[name]: value})
             },
             /**
-             * @template {{}} T
-             * @param {(data: T) => any} sel
-             * @returns {Attr<T>}
+             * @param {() => any} sel
+             * @returns {Attr}
              */
-            bind(sel = data => data[name]) {
-                return data => ({[name]: sel(data)})
+            bind(sel) {
+                return () => ({[name]: sel()})
             }
         }))
     }
@@ -77,9 +72,9 @@ const UI = (() => {
     /**
      * @template {{}} T
      * @param {string} el
-     * @param {Attr<T>[]} attrs 
-     * @param {...Renderer<T>} children 
-     * @returns {Renderer<T>}
+     * @param {Attr[]} attrs 
+     * @param {...Renderer} children 
+     * @returns {Renderer}
      */
     function $(el, attrs = [], ...children) {
         /**
@@ -136,13 +131,12 @@ const UI = (() => {
             }
         }
         /**
-         * @param {T} data
          * @param {Element} el
          * @param {Map<string, string>} currentAttrs
          * @param {Map<string, (ev: any) => void>} currentEvents
          */
-        function updateProps(data, el, currentAttrs, currentEvents) {
-            const a = attrs.reduce((a, attr) => ({...a, ...attr(data)}), {})
+        function updateProps(el, currentAttrs, currentEvents) {
+            const a = attrs.reduce((a, attr) => ({...a, ...attr()}), {})
             /**
              * @type {Map<string, string>}
              */
@@ -162,7 +156,7 @@ const UI = (() => {
             updateAttrs(el, currentAttrs, newAttrs)
             updateEvents(el, currentEvents, newEvents)
         }
-        return (root, data) => {
+        return (root) => {
             const e = document.createElement(el)
             /**
              * @type {Map<string, string>}
@@ -172,12 +166,12 @@ const UI = (() => {
              * @type {Map<string, (ev: any) => void>}
              */
             const currentEvents = new Map()
-            updateProps(data(), e, currentAttrs, currentEvents)
-            const childNodes = children.map(c => c(e, data))
+            updateProps(e, currentAttrs, currentEvents)
+            const childNodes = children.map(c => c(e))
             root.appendChild(e)
             return {
                 update() {
-                    updateProps(data(), e, currentAttrs, currentEvents)
+                    updateProps(e, currentAttrs, currentEvents)
                     childNodes.forEach(c => c.update())
                 },
                 unmount() {
@@ -205,52 +199,40 @@ const UI = (() => {
     }
     /**
      * @template {{}} TProps
-     * @template {{}} TData
-     * @typedef {(ctx: {props: TProps, update(): void}) => {data?: () => TData, mounted?: () => () => void}} Factory
+     * @typedef {(ctx: {props: TProps, update(): void}) => {template: Renderer, mounted?: () => () => void}} Factory
      */
     /**
      * @template {{}} TProps
-     * @template {{}} TData
-     * @param {Renderer<TData>} renderer
-     * @param {Factory<TProps, TData>} factory
+     * @param {Factory<TProps>} factory
      */
-    function Component(renderer, factory) {
+    function Component(factory) {
         /**
-         * @template {{}} T
-         * @param {Attr<T>[]} attrs
-         * @returns {Renderer<T>}
+         * @param {Attr[]} attrs
+         * @returns {Renderer}
          */
         return function render(attrs = []) {
-            /**
-             * @param {T} data
-             * @returns {TProps}
-             */
-            function getProps(data) {
-                return attrs.reduce((a, attr) => ({...a, ...attr(data)}), {})
+            function getProps() {
+                return attrs.reduce((a, attr) => ({...a, ...attr()}), {})
             }
-            return (root, data) => {
-                let update = () => {}, props = getProps(data())
+            return (root) => {
+                let update = () => {}, props = getProps()
                 let comp = factory({
                     props,
                     update: () => update(),
                 })
-                const compData = () => {
-                    const {data = () => ({})} = comp
-                    return data()
-                }
-                update = () => rendered.update()
                 function mounted() {
                     const { mounted = () => () => {} } = comp
                     return mounted()
                 }
-                let rendered = renderer(root, compData), unmount = mounted()
+                let rendered = comp.template(root), unmount = mounted()
+                update = () => rendered.update()
                 return {
                     unmount() {
                         unmount()
                         rendered.unmount()
                     },
                     update() {
-                        const newProps = getProps(data())
+                        const newProps = getProps()
                         if (!safe_eq(props, newProps)) {
                             props = newProps
                             unmount()
@@ -258,9 +240,9 @@ const UI = (() => {
                                 props,
                                 update,
                             })
-                            update()
+                            rendered = comp.template(root)
                             unmount = mounted()
-                        }
+                        } else update()
                     },
                 }
             }
@@ -268,12 +250,12 @@ const UI = (() => {
     }
 
     /**
-     * @param {Renderer<{}>} renderer
+     * @param {Renderer} renderer
      * @param {string} target
      * @returns a function to unmount from `target`
      */
     function mount(renderer, target) {
-        const r = renderer(document.querySelector(target), () => ({}))
+        const r = renderer(document.querySelector(target))
         return () => r.unmount()
     }
 

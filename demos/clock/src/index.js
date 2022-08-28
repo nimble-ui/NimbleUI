@@ -1,11 +1,9 @@
 window.addEventListener('load', function () {
-    const { $, t, _, mount, genAttrs, Component } = UI, [cls, style] = genAttrs(['class', 'style'])
-    const Clock = Component($('p', [], t('Current Time: '), _(data => data.clk)), ({ update }) => {
+    const { $, t, _, mount, Component } = UI
+    const Clock = Component(({ update }) => {
         let clk = `${new Date}`
         return {
-            data() {
-                return { clk }
-            },
+            template: $('p', [], t('Current Time: '), _(() => clk)),
             mounted() {
                 console.log('Loaded')
                 const c = setInterval(() => {
