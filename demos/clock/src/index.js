@@ -1,9 +1,13 @@
 window.addEventListener('load', function () {
-    const { $, t, _, mount, Component } = UI
-    const Clock = Component(({ update }) => {
+    const { e, c, _, mount } = UI
+    /**
+     * @param {{fmt: (x: string) => string}} param0
+     * @param {() => void} update
+     */
+    const Clock = ({fmt}, update) => {
         let clk = `${new Date}`
         return {
-            template: $('p', [], t('Current Time: '), _(() => clk)),
+            template: e('h2',() => ({}),_(() => fmt(clk))),
             mounted() {
                 console.log('Loaded')
                 const c = setInterval(() => {
@@ -13,6 +17,6 @@ window.addEventListener('load', function () {
                 return () => clearInterval(c)
             },
         }
-    })
-    mount(Clock(), 'body')
+    }
+    mount(c(Clock, () => ({fmt: x => `The current time is ${x}.`})), 'body')
 })

@@ -1,5 +1,9 @@
+/**
+ * @namespace UI
+ */
 const UI = (() => {
     /**
+     * @memberof UI
      * @typedef {(root: Node)=>{update(): void, unmount(): void}} Renderer
      */
     function noop() {}
@@ -42,41 +46,24 @@ const UI = (() => {
     }
 
     /**
-     * @typedef {{'this': (el: Node) => void, 'class': string[], style: {[key: string]: any}, [key: string]: any}} Attr_
+     * @typedef {{[key:String]: any}} AttrObject
      */
     /**
-     * @typedef {() => Attr_} Attr
+     * @template {AttrObject} A
+     * @typedef {() => A} Attrs
      */
     /**
-     * @param {string[]} names
+     * @template {AttrObject} P
+     * @typedef {(props: P, update: () => void) => {template: Renderer, mounted?: () => (() => void) | undefined}} Component
      */
-    function genAttrs(names) {
-        return names.map(name =>({
-            /**
-             * @param {any} value
-             * @returns {Attr}
-             */
-            is(value) {
-                return () => ({[name]: value})
-            },
-            /**
-             * @param {() => any} sel
-             * @returns {Attr}
-             */
-            bind(sel) {
-                return () => ({[name]: sel()})
-            }
-        }))
-    }
 
     /**
-     * @template {{}} T
      * @param {string} el
-     * @param {Attr[]} attrs 
+     * @param {Attrs<AttrObject>} attrs 
      * @param {...Renderer} children 
      * @returns {Renderer}
      */
-    function $(el, attrs = [], ...children) {
+    function e(el, attrs, ...children) {
         /**
          * @param {Element} el
          * @param {Map<string, string>} current
@@ -136,7 +123,7 @@ const UI = (() => {
          * @param {Map<string, (ev: any) => void>} currentEvents
          */
         function updateProps(el, currentAttrs, currentEvents) {
-            const a = attrs.reduce((a, attr) => ({...a, ...attr()}), {})
+            const a = attrs()
             /**
              * @type {Map<string, string>}
              */
@@ -198,53 +185,37 @@ const UI = (() => {
         return false
     }
     /**
-     * @template {{}} TProps
-     * @typedef {(ctx: {props: TProps, update(): void}) => {template: Renderer, mounted?: () => () => void}} Factory
+     * @template {AttrObject} Props
+     * @param {Component<Props>} comp
+     * @param {Attrs<Props>} attrs
+     * @returns {Renderer}
      */
-    /**
-     * @template {{}} TProps
-     * @param {Factory<TProps>} factory
-     */
-    function Component(factory) {
-        /**
-         * @param {Attr[]} attrs
-         * @returns {Renderer}
-         */
-        return function render(attrs = []) {
-            function getProps() {
-                return attrs.reduce((a, attr) => ({...a, ...attr()}), {})
+     function c(comp, attrs) {
+        return (root) => {
+            let update = () => {}, props = attrs()
+            let instance = comp(props, () => update(),)
+            function mounted() {
+                const { mounted = () => () => {} } = instance
+                const unmount = mounted()
+                return unmount || (() => {})
             }
-            return (root) => {
-                let update = () => {}, props = getProps()
-                let comp = factory({
-                    props,
-                    update: () => update(),
-                })
-                function mounted() {
-                    const { mounted = () => () => {} } = comp
-                    return mounted()
-                }
-                let rendered = comp.template(root), unmount = mounted()
-                update = () => rendered.update()
-                return {
-                    unmount() {
+            let rendered = instance.template(root), unmount = mounted()
+            update = () => rendered.update()
+            return {
+                unmount() {
+                    unmount()
+                    rendered.unmount()
+                },
+                update() {
+                    const newProps = attrs()
+                    if (!safe_eq(props, newProps)) {
+                        props = newProps
                         unmount()
-                        rendered.unmount()
-                    },
-                    update() {
-                        const newProps = getProps()
-                        if (!safe_eq(props, newProps)) {
-                            props = newProps
-                            unmount()
-                            comp = factory({
-                                props,
-                                update,
-                            })
-                            rendered = comp.template(root)
-                            unmount = mounted()
-                        } else update()
-                    },
-                }
+                        instance = comp(props, update)
+                        rendered = comp.template(root)
+                        unmount = mounted()
+                    } else update()
+                },
             }
         }
     }
@@ -260,11 +231,12 @@ const UI = (() => {
     }
 
     return {
-        $,
+        e,
+        c,
         _,
         t,
         mount,
-        genAttrs,
-        Component,
+        //genAttrs,
+        //reactive,
     }
 })()
