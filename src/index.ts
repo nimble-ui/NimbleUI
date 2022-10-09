@@ -1,14 +1,16 @@
 import type { AttrObject, Renderer, Attrs, AttrMap, Component, EventMap } from './types'
 
+import { text, mount, unmount, html } from 'redom'
+
 function noop() {}
 
 export function t(str: string): Renderer {
     return root => {
-        const txt = document.createTextNode(str)
-        root.appendChild(txt)
+        const txt = text(str)
+        mount(root, txt)
         return {
             unmount() {
-                root.removeChild(txt)
+                unmount(root, txt)
             },
             update: noop,
         }
@@ -18,11 +20,11 @@ export function t(str: string): Renderer {
 export function _(sel: () => any): Renderer {
     return root => {
         let prev = `${sel()}`
-        const txt = document.createTextNode(prev)
-        root.appendChild(txt)
+        const txt = text(prev)
+        mount(root, txt)
         return {
             unmount() {
-                root.removeChild(txt)
+                unmount(root, txt)
             },
             update() {
                 const current = `${sel()}`
@@ -92,19 +94,19 @@ export function e(el: string, attrs: Attrs<AttrObject>, ...children: Renderer[])
         updateEvents(el, currentEvents, newEvents)
     }
     return (root) => {
-        const e = document.createElement(el)
+        const e = html(el)
         const currentAttrs: AttrMap = new Map()
         const currentEvents: EventMap = new Map()
         updateProps(e, currentAttrs, currentEvents)
         const childNodes = children.map(c => c(e))
-        root.appendChild(e)
+        mount(root, e)
         return {
             update() {
                 updateProps(e, currentAttrs, currentEvents)
                 childNodes.forEach(c => c.update())
             },
             unmount() {
-                root.removeChild(e)
+                unmount(root, e)
                 childNodes.forEach(c => c.unmount())
             },
         }
