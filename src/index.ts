@@ -114,7 +114,7 @@ export function e(el: string, attrs: Attrs<AttrObject>, ...children: Renderer[])
 }
 
 
-function safe_eq(x: any, y: any) {
+/*function safe_eq(x: any, y: any) {
     if (x === y) return true
     if (
         (typeof x == 'object' && x != null) &&
@@ -129,16 +129,22 @@ function safe_eq(x: any, y: any) {
         return true
     }
     return false
-}
+}*/
 
 export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs<Props>): Renderer {
+    function props<T>(cb: (props: Props) => T) {
+        return () => cb(attrs())
+    }
     return (root) => {
-        let update = () => {}, props = attrs()
-        let instance = comp(props, () => update(),)
+        let update = () => {}
+        let instance = comp({props, update: () => update()})
         function mounted() {
             const { mounted = () => () => {} } = instance
-            const unmount = mounted()
-            return unmount || (() => {})
+            return mounted() || (() => {})
+        }
+        function updated() {
+            const { updated = () => {} } = instance
+            updated()
         }
         let rendered = instance.template(root), unmount = mounted()
         update = () => rendered.update()
@@ -148,14 +154,8 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
                 rendered.unmount()
             },
             update() {
-                const newProps = attrs()
-                if (!safe_eq(props, newProps)) {
-                    props = newProps
-                    unmount()
-                    instance = comp(props, update)
-                    rendered = instance.template(root)
-                    unmount = mounted()
-                } else update()
+                update()
+                updated()
             },
         }
     }
