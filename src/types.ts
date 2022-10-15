@@ -1,6 +1,8 @@
-export type Renderer = (root: Node)=>{
+import type { RedomElement } from 'redom'
+export type Renderer = () => {
+    el: RedomElement,
     update(): void,
-    unmount(): void
+    unmount(): void,
 }
 
 export type AttrObject = {[key:string]: any}

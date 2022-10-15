@@ -1,31 +1,27 @@
 import type { AttrObject, Renderer, Attrs, AttrMap, Component, EventMap } from './types'
 
-import { text, mount, unmount, html } from 'redom'
+import { text, mount as $mount, unmount, html, setChildren } from 'redom'
 
 function noop() {}
 
 export function t(str: string): Renderer {
-    return root => {
+    return () => {
         const txt = text(str)
-        mount(root, txt)
         return {
-            unmount() {
-                unmount(root, txt)
-            },
+            el: txt,
+            unmount: noop,
             update: noop,
         }
     }
 }
 
 export function _(sel: () => any): Renderer {
-    return root => {
+    return () => {
         let prev = `${sel()}`
         const txt = text(prev)
-        mount(root, txt)
         return {
-            unmount() {
-                unmount(root, txt)
-            },
+            el: txt,
+            unmount: noop,
             update() {
                 const current = `${sel()}`
                 if (current != prev) txt.textContent = prev = current
@@ -93,21 +89,21 @@ export function e(el: string, attrs: Attrs<AttrObject>, ...children: Renderer[])
         updateAttrs(el, currentAttrs, newAttrs)
         updateEvents(el, currentEvents, newEvents)
     }
-    return (root) => {
-        const e = html(el)
+    return () => {
+        const childNodes = children.map(c => c())
+        const e = html(el, ...childNodes.map(c => c.el))
         const currentAttrs: AttrMap = new Map()
         const currentEvents: EventMap = new Map()
         updateProps(e, currentAttrs, currentEvents)
-        const childNodes = children.map(c => c(e))
-        mount(root, e)
         return {
+            el: e,
             update() {
                 updateProps(e, currentAttrs, currentEvents)
                 childNodes.forEach(c => c.update())
             },
             unmount() {
-                unmount(root, e)
                 childNodes.forEach(c => c.unmount())
+                setChildren(e, [])
             },
         }
     }
@@ -135,7 +131,7 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
     function props<T>(cb: (props: Props) => T) {
         return () => cb(attrs())
     }
-    return (root) => {
+    return () => {
         let update = () => {}
         let instance = comp({props, update: () => update()})
         function mounted() {
@@ -146,9 +142,10 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
             const { updated = () => {} } = instance
             updated()
         }
-        let rendered = instance.template(root), unmount = mounted()
+        let rendered = instance.template(), unmount = mounted()
         update = () => rendered.update()
         return {
+            el: rendered.el,
             unmount() {
                 unmount()
                 rendered.unmount()
@@ -157,6 +154,20 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
                 update()
                 updated()
             },
+        }
+    }
+}
+
+export function mount(renderer: Renderer, root: Node) {
+    const rendered = renderer()
+    $mount(root, rendered.el)
+    return {
+        update() {
+            rendered.update()
+        },
+        unmount() {
+            rendered.unmount()
+            unmount(root, rendered.el)
         }
     }
 }
