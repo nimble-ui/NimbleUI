@@ -1,109 +1,47 @@
 import type { AttrObject, Renderer, Attrs, AttrMap, Component, EventMap } from './types'
-
-import { text, mount as $mount, unmount, html, setChildren } from 'redom'
+import { text, elementOpenStart, elementOpenEnd, elementClose, attr, patch } from 'incremental-dom'
 
 function noop() {}
 
 export function t(str: string): Renderer {
-    return () => {
-        const txt = text(str)
-        return {
-            el: txt,
-            unmount: noop,
-            update: noop,
-        }
-    }
+    return () => ({
+        render() {
+            text(str)
+        },
+        unmount: noop,
+    })
 }
 
 export function _(sel: () => any): Renderer {
-    return () => {
-        let prev = `${sel()}`
-        const txt = text(prev)
-        return {
-            el: txt,
-            unmount: noop,
-            update() {
-                const current = `${sel()}`
-                if (current != prev) txt.textContent = prev = current
-            },
-        }
-    }
+    return () => ({
+        unmount: noop,
+        render() {
+            const v = sel()
+            if (v || v == 0) text(`${v}`)
+        },
+    })
 }
 
 export function e(el: string, attrs: Attrs<AttrObject>, ...children: Renderer[]): Renderer {
-    function updateAttrs(el:Element, current:AttrMap, $new:AttrMap) {
-        for (const k of current.keys()) {
-            if ($new.has(k)) {
-                const v = $new.get(k)!
-                if (current.get(k) != v) {
-                    el.setAttribute(k, v)
-                    current.set(k, v)
-                }
-            } else {
-                el.removeAttribute(k)
-                current.delete(k)
-            }
-        }
-        for (const k of $new.keys()) {
-            if (!current.has(k)) {
-                const v = $new.get(k)!
-                el.setAttribute(k, v)
-                current.set(k, v)
-            }
-        }
-    }
-    function updateEvents(el: Element, current: EventMap, $new: EventMap) {
-        for (const k of current.keys()) {
-            if ($new.has(k)) {
-                const v = $new.get(k)!
-                if (current.get(k) != v) {
-                    el.removeEventListener(k, current.get(k)!)
-                    el.addEventListener(k, v)
-                    current.set(k, v)
-                }
-            } else {
-                el.removeEventListener(k, current.get(k)!)
-                current.delete(k)
-            }
-        }
-        for (const k of $new.keys()) {
-            if (!current.has(k)) {
-                const v = $new.get(k)!
-                el.addEventListener(k, v)
-                current.set(k, v)
-            }
-        }
-    }
-    function updateProps(el:Element, currentAttrs: AttrMap, currentEvents: EventMap) {
-        const a = attrs()
-        const newAttrs: AttrMap = new Map()
-        const newEvents: EventMap = new Map()
-        for (const k of Object.keys(a)) if (a[k] == 0 ? true : a[k]) {
-            const v = a[k]
-            if (k.startsWith('on') && (typeof v) == 'function') {
-                newEvents.set(k.slice(2), v)
-            } else {
-                newAttrs.set(k, `${v == true ? k : v}`)
-            }
-        }
-        updateAttrs(el, currentAttrs, newAttrs)
-        updateEvents(el, currentEvents, newEvents)
-    }
-    return () => {
-        const childNodes = children.map(c => c())
-        const e = html(el, ...childNodes.map(c => c.el))
-        const currentAttrs: AttrMap = new Map()
-        const currentEvents: EventMap = new Map()
-        updateProps(e, currentAttrs, currentEvents)
+    return (ids, requestUpdate) => {
+        const key = ids.join('_'), childRenderers = children.map((c, i) => c([`${i}`], requestUpdate))
         return {
-            el: e,
-            update() {
-                updateProps(e, currentAttrs, currentEvents)
-                childNodes.forEach(c => c.update())
+            render() {
+                const a = attrs()
+                elementOpenStart(el, key)
+                for (const name of Object.keys(a)) {
+                    attr(name, a[name])
+                }
+                elementOpenEnd()
+                for (const c of childRenderers) {
+                    c.render()
+                }
+                elementClose(el)
             },
             unmount() {
-                childNodes.forEach(c => c.unmount())
-                setChildren(e, [])
+                for (const c of childRenderers) {
+                    c.unmount()
+                }
             },
         }
     }
@@ -131,7 +69,7 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
     function props<T>(cb: (props: Props) => T) {
         return () => cb(attrs())
     }
-    return () => {
+    return (ids, requestUpdate) => {
         let update = () => {}
         let instance = comp({props, update: () => update()})
         function mounted() {
@@ -142,33 +80,36 @@ export function c<Props extends AttrObject>(comp: Component<Props>, attrs: Attrs
             const { updated = () => {} } = instance
             updated()
         }
-        let rendered = instance.template(), unmount = mounted()
-        update = () => rendered.update()
+        let rendered = instance.template(ids, requestUpdate), unmount = mounted()
+        update = () => requestUpdate()
         return {
-            el: rendered.el,
             unmount() {
                 unmount()
                 rendered.unmount()
             },
-            update() {
-                update()
+            render() {
+                rendered.render()
                 updated()
             },
         }
     }
 }
 
-export function mount(renderer: Renderer, root: Node) {
-    const rendered = renderer()
-    $mount(root, rendered.el)
+export function mount(renderer: Renderer, root: HTMLElement) {
+    let render = () => {}
+    const rendered = renderer([], () => render())
+    render = () => {
+        patch(root, () => rendered.render())
+    }
+    render()
     return {
         update() {
-            rendered.update()
+            render()
         },
         unmount() {
+            render = () => {}
             rendered.unmount()
-            unmount(root, rendered.el)
-        }
+        },
     }
 }
 

@@ -1,7 +1,5 @@
-import type { RedomElement } from 'redom'
-export type Renderer = () => {
-    el: RedomElement,
-    update(): void,
+export type Renderer = (ids: string[], requestUpdate: () => void) => {
+    render(): void,
     unmount(): void,
 }
 
@@ -14,9 +12,3 @@ export type Component<P extends AttrObject> = (ctx: {props: <T>(cb: (props: P) =
     mounted?: () => (() => void) | undefined,
     updated?: () => void
 }
-
-export type AttrMap = Map<string, string>
-
-export type EventHandler = (ev: Event) => void
-
-export type EventMap = Map<string, EventHandler>
