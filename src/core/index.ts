@@ -22,3 +22,7 @@ export function c<Props extends Attrs>(
 export function f(children: Render[] = []): Render {
     return render => render.fragment(children)
 }
+
+export function when(cond: Accessor, then: Render, alt: Render = f()): Render {
+    return ctx => ctx.when(cond, then, alt)
+}

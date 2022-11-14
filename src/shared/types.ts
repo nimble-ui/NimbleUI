@@ -29,4 +29,5 @@ export type Render = <T>(render: {
         props: Accessor<Partial<Props>>[]
     ): T,
     fragment(children: Render[]): T,
+    when(cond: Accessor, then: Render, alt: Render): T,
 }) => T

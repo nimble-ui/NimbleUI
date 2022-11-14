@@ -109,5 +109,24 @@ export function render(
                 },
             }
         },
+        when(cond, then, alt) {
+            const getCond = () => cond() ? true : false,
+            renderThen = () => render(then, [...ids, 'then'], requestUpdate),
+            renderAlt = () => render(alt, [...ids, 'else'], requestUpdate)
+            let currentCond = getCond(), currentRenderer = currentCond ? renderThen() : renderAlt()
+            return {
+                render() {
+                    const newCond = getCond()
+                    if (currentCond != newCond) {
+                        currentRenderer.unmount()
+                        currentCond = newCond
+                        currentRenderer = currentCond ? renderThen() : renderAlt()
+                    }
+                },
+                unmount() {
+                    currentRenderer.unmount()
+                },
+            }
+        },
     })
 }
