@@ -128,5 +128,67 @@ export function render(
                 },
             }
         },
+        each<TItem>(
+            items: Accessor<TItem[]>,
+            trackBy: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
+            renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
+        ) {
+            const getItems = () => {
+                const tb = trackBy(), i = items()
+                return i.map((item, index) => ({
+                    item,
+                    id: `${tb(item, index, i)}`,
+                }))
+            }
+            class Item {
+                public render = render(
+                    renderItems(() => this.item, () => this.index, items),
+                    [...ids, `item:${this.id}`],
+                    requestUpdate
+                )
+                constructor(
+                    public item: TItem,
+                    public index: number,
+                    public id: string
+                ) {}
+            }
+            let currentItems: Item[] = []
+            return {
+                render() {
+                    let newItems = getItems(), discard: Item[] = [], completed: Item[] = []
+                    for (const item of currentItems) {
+                        if (newItems.length == 0) {
+                            discard = [...discard, ...currentItems]
+                            break
+                        } else if (newItems[0].id != item.id) {
+                            discard = [...discard, item]
+                        } else {
+                            item.item = newItems[0].item
+                            completed = [...completed, item]
+                            newItems = newItems.slice(1)
+                        }
+                    }
+                    for (const item of newItems) {
+                        if (discard.some(discarded => discarded == item)) {
+                            const idx = discard.findIndex(discarded => discarded.id == item.id)
+                            completed = [...completed, discard[idx]]
+                            discard = discard.filter((_, i) => i != idx)
+                        } else {
+                            const i = new Item(item.item, completed.length - 1, item.id)
+                            completed = [...completed, i]
+                        }
+                    }
+                    discard.forEach(d => d.render.unmount())
+                    currentItems = completed
+                    currentItems.forEach((item, i) => {
+                        item.index = i
+                        item.render.render()
+                    })
+                },
+                unmount() {
+                    currentItems.forEach(r => r.render.unmount())
+                },
+            }
+        }
     })
 }

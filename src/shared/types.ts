@@ -30,4 +30,9 @@ export type Render = <T>(render: {
     ): T,
     fragment(children: Render[]): T,
     when(cond: Accessor, then: Render, alt: Render): T,
+    each<TItem>(
+        items: Accessor<TItem[]>,
+        trackBy: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
+        renderItem: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
+    ): T,
 }) => T
