@@ -1,18 +1,18 @@
-import type { Middleware, LifecycleHooks, Attrs } from '../shared/types'
+import type { Middleware, LifecycleHooks, Accessor } from '../shared/types'
 
-export function Prop<Props extends Attrs, Value>(sel: (props: Props) => Value): Middleware<Props, Value> {
-    return ctx => sel(ctx.props())
+export function Prop<Props extends Record<string, any>, Value>(sel: (props: Props) => Value): Middleware<Props, Accessor<Value>> {
+    return ctx => () => sel(ctx.props())
 }
 
-export function Refresh<Props extends Attrs>(): Middleware<Props, () => void> {
+export function Refresh<Props extends Record<string, any>>(): Middleware<Props, () => void> {
     return ctx => () => ctx.refresh()
 }
 
-export function Lifecycle<Props extends Attrs>(): Middleware<Props, LifecycleHooks> {
+export function Lifecycle<Props extends Record<string, any>>(): Middleware<Props, LifecycleHooks> {
     return ctx => ctx.on
 }
 
-export function State<Props extends Attrs, Value>(init: Value): Middleware<Props, {value: Value}> {
+export function State<Props extends Record<string, any>, Value>(init: Value): Middleware<Props, {value: Value}> {
     return ctx => {
         let value = init
         return {
