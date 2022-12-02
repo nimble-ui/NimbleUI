@@ -112,7 +112,7 @@ export function render(
                 node: frag as VNode,
                 render() {
                     frag.setChildren(childRenderers.map(c => {
-                        c.unmount()
+                        c.render()
                         return c.node
                     }))
                 },
