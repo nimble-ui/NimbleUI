@@ -1,30 +1,56 @@
-# NimbleUI
-Declarative DOM Manipulation
+# NimbleUI - A Nimble User Interface Library
+
+![Logo](./nimble-ui-logo.png)
+
+---
+
+[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
+
+***:warning:** This library is still in early development! **Expect bugs!***
+
+---
 
 ## Why Another DOM Library?
-NimbleUI is a new kind of library out there. It is declarative like React, but it does not use virtual DOM.
-Under the hood, NimbleUI actually manipulates real DOM nodes, and it updates those nodes as needed like a neurosurgin removing cancer tumors from a patient's brain.
-It is really like a group of neurosurgins were removing cancer tumors from a patient's brain that were assigned to each individual surgin.
+NimbleUI is a new kind of library out there. It is declarative like React; NimbleUI does use a virtual DOM, but the way it works is more efficient.
 
 ## Benefits of NimbleUI
-1. NimbleUI is built to be fast and efficient because there is no virtual DOM diffing needed.
-2. NimbleUI is simple - there are only six functions that are used. ***six***.
-3. NimbleUI has zero dependencies - everything is home-grown.
+1. NimbleUI is built to be fast and efficient because there very minimal virtual DOM diffing needed.
+2. NimbleUI has zero dependencies - everything is home-grown.
+3. There is no need for a compilation step unlike with React (JSX) or Svelte.
 
 ## How NimbleUI Works
-NimbleUI has a basic concept: the renderer. A renderer is a function that takes a DOM node as a parameter and returns a set of lifecycle hooks. That's it.
-```js
-(root) => {
-    // Step 1: Create the child node and mount it to `root`.
-    //...
-    return {
-        update() {
-            // Step 2: Update the child node as needed.
-        },
-        unmount() {
-            // Step 2: Clean up and remove the child node from `root`.
-        }
-    }
-}
+NimbleUI has two parts:
+- `Render` instructions are created by the core API; they are what dictate what the user can interact with.
+- `Renderer`s are what do the rendering. This is currently done on the client but can also be done on the server. In the case of the client, renderers are what use the render instructions to tell the DOM how to behave.
+
+## Basic Usage
+### Installation
+
+As of right now, NimbleUI is not on the NPM registry; the library will need to be installed from GitHub:
+
+```ps1
+> npm i -s git+https://github.com/IRod22/NimbleUI/tree/publish
 ```
-That's how NimbleUI Works.
+
+### Hello, NimbleUI!
+
+```js
+import { e, t, attr } from 'nimble-ui'
+import mount from 'nimble-ui/client'
+
+const app = e('h1', [
+    attr('class', () => 'title'),
+    attr('style', () => 'color:green;'),
+], [t('Hello, NimbleUI!')])
+
+window.addEventListener('load', function () {
+    mount(app, this.document.body)
+})
+```
+
+## License: HL3
+With the current turmoil going on, I decided to use the Hippocratic License 3.0 (HL3).
+As an activist, I stand against the current status quo:
+from wars, to company mal-practices, and to discrimination and abuses of any kind;
+That is why I am choosing the HL3 as the license for NimbleUI.
+Because of the HL3 is different than other FOSS licenses, I suggest you read the license carefully.
