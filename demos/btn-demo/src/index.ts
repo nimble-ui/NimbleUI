@@ -1,7 +1,8 @@
-import { e, t } from '../../../src/index'
+import { e, t, on } from '../../../src/index'
+import mount from '../../../src/client/index'
 
-const app = e('button', () => ({ onclick: () => alert('Hello, NimbleUI!') }), t('Click here'))
+const app = e('button', [on('click', () => () => alert('Hello, NimbleUI!'))], [t('Click here')])
 
 window.addEventListener('load', function() {
-    app(this.document.body)
+    mount(app, this.document.body)
 })

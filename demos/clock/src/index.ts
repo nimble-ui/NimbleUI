@@ -1,22 +1,26 @@
-import {Component, e, c, _} from '../../../src/index'
+import { e, c, _, each } from '../../../src/index'
+import mount from '../../../src/client/index'
+import { Component } from '../../../src/types'
+import { Prop, State, Lifecycle } from '../../../src/middleware'
 
-const Clock: Component<{fmt: (clk: string) => string}> = ({fmt}, update) => {
-    let clk = `${new Date}`
-    return {
-        template: e('h2', () => ({}), _(() => fmt(clk))),
-        mounted() {
-            console.log('Loaded')
-            const c = setInterval(() => {
-                clk = `${new Date}`
-                update()
-            })
-            return () => clearInterval(c)
-        },
-    }
+const Clock: Component<{format: (d: Date) => string[]}> = use => {
+    const format = use(Prop(props => props.format))
+    const date = use(State(new Date))
+    use(Lifecycle()).mounted(() => {
+        const tmr = setInterval(() => {
+            date.value = new Date
+        }, 1000)
+        return () => clearInterval(tmr)
+    })
+    return e('p', [], [
+        each({items: () => format()(date.value)}, text => _(text))
+    ])
 }
 
-const app = c(Clock, () => ({fmt: (clk) => `The current time is ${clk}`}))
+const app = c(Clock, () => ({
+    format: date => ['It is ', `${date.getHours()}`, date.getMinutes() ? `:${date.getMinutes()}` : " o'clock", '.']
+}))
 
 window.addEventListener('load', function () {
-    app(this.document.body)
+    mount(app, this.document.body)
 })
