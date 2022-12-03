@@ -43,7 +43,10 @@ export function diffAttrs(node: Element, current: Attrs, target: Attrs) {
     const currentKeys = Object.keys(current), targetKeys = Object.keys(target)
     const unionKeys = [...currentKeys, ...targetKeys.filter(k => !currentKeys.includes(k))]
     for (const k of unionKeys) {
-        if (!targetKeys.includes(k)) node.removeAttribute(k)
+        if (!targetKeys.includes(k)) {
+            node.setAttribute(k, '')
+            node.removeAttribute(k)
+        }
         else if (!currentKeys.includes(k)) node.setAttribute(k, target[k])
         else if (target[k] != current[k]) node.setAttribute(k, target[k])
     }
