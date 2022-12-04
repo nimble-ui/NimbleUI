@@ -11,8 +11,5 @@
     "library"
   ],
   "author": "Ivan Rodriguez <ivan18rod@yahoo.com>",
-  "license": "HL3",
-  "devDependencies": {
-    "esbuild": "^0.15.16"
-  }
+  "license": "HL3"
 }
