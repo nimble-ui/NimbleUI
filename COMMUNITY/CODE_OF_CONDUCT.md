@@ -23,10 +23,18 @@ We will not accept the following:
   or obstructing activities relating to the development of NimbleUI
 - Discriminatory behavior based on race, gender, disability, or any other attribute.
 
-If you see misbehaviour, speak with the community's [Administrators](ADMINISTRATORS.md).
+## Reporting Misconduct
+
+If you see misconduct, speak with one of the community's [Administrators](ADMINISTRATORS.md) if possible.
+If reactions are enabled on the issue, pull request, or discussion thread,
+a thumbs down (:-1:) *will* be treated as an anonymous report.
+
+Administrators will do their best to promptly respond to misconduct,
+but it is up to the community's members to report misconduct to an Administrator.
+We would rather have one report too many than one report too few.
 
 ## Administrative Policies and Practices
 
-Administrators will try to look for misconduct when possible, but it is up to the community's members to report misconduct; We would rather have one report too many than one too few.
-
 Administrators will not take a report lightly; appropriate actions will be taken as needed, and the community member in question will be warned as deemed necessary by Administrators.
+
+Diciplinary actions will range from a public warning, to a temporary user account ban, to a perminent user ban.
