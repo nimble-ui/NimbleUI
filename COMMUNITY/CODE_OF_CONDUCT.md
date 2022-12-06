@@ -38,3 +38,4 @@ We would rather have one report too many than one report too few.
 Administrators will not take a report lightly; appropriate actions will be taken as needed, and the community member in question will be warned as deemed necessary by Administrators.
 
 Diciplinary actions will range from a public warning, to a temporary user account ban, to a perminent user ban.
+In the most severe cases, if a large amount of community members are in violation of the Code of Conduct, a temporary lockdown **will** be in effect.
