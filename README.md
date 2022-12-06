@@ -54,3 +54,8 @@ As an activist, I stand against the current status quo:
 from wars, to company mal-practices, and to discrimination and abuses of any kind;
 That is why I am choosing the HL3 as the license for NimbleUI.
 Because of the HL3 is different than other FOSS licenses, I suggest you read the license carefully.
+
+## Contributing to NimbleUI
+
+Contributions are welcome, but it is greatly appreciated if you read the [Contributing Guidelines](COMMUNITY/CONTRIBUTING.md) first.
+
