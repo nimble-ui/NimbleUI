@@ -9,7 +9,7 @@ The contributor in question will apply to become a core member as follows:
 
 The application will be reviewed by the core team, and the verdict will be given within five business days.
 
-If the application was accepted, the member in question will [shadow](https://www.gartner.com/en/human-resources/glossary/job-shadowing) other core members performing necessary roles
+If the application was accepted, the member in question will [shadow](https://www.gartner.com/en/human-resources/glossary/job-shadowing) other core members performing necessary roles.
 New members will shadow existing members for seven days, and during this period, they can ask questions in the meeting room (#1) or the lounge (#2), but they are not yet community administrators.
 
 Once the shadowing period is complete, the member in question is ready to become an Administrator,
