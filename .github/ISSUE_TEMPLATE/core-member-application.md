@@ -17,7 +17,7 @@ assignees: IRod22
 
 <!-- Required. Be honest, thoughtful, and thorough about why we should let you join. Include all relevant reasons (your programming or community organization experiences for example) to back up your response. -->
 
-## As a future core member, how confident do you feel about helping enforce the [Code of Conduct](./COMMUNITY/CODE_OF_CONDUCT.md)?
+## As a future core member, how confident do you feel about helping enforce the [Code of Conduct](../tree/release/COMMUNITY/CODE_OF_CONDUCT.md)?
 
 <!-- Required. As stated in the Code of Conduct, all core members are required to uphold the Community Guidelines. Be honest, thoughtful, and thorough about how confident you feel about enforcing the Community Guidelines. -->
 
