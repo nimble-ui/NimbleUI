@@ -57,5 +57,5 @@ Because of the HL3 is different than other FOSS licenses, I suggest you read the
 
 ## Contributing to NimbleUI
 
-Contributions are welcome, but it is greatly appreciated if you read the [Contributing Guidelines](COMMUNITY/CONTRIBUTING.md) first.
+Contributions are welcome, but it is greatly appreciated if you read the [Contributing Guidelines](CONTRIBUTING.md) first.
 
