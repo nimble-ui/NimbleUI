@@ -1,20 +1,21 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
+title: '[Feature Request] '
 labels: ''
-assignees: ''
+assignees: IRod22
 
 ---
-
+<!-- Thank you for suggesting how to improve NimbleUI! Please fill in the template below. -->
 **Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!-- Required. this should be a clear and concise description of what the problem is. -->
+I'm always frustrated when [...]
 
 **Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+<!-- Required. This should be a clear and concise description of what you want to happen. -->
 
 **Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+<!-- Required. This should be a clear and concise description of any alternative solutions or features you've considered. -->
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+<!-- Optional. Add any other context or screenshots about the feature request here. -->

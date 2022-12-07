@@ -1,7 +1,7 @@
 ---
 name: Core Member Application
 about: This is for contributors who want to become core members
-title: ''
+title: "@{username}'s CMA"
 labels: 'CMA: Awaiting Review'
 assignees: IRod22
 
@@ -19,7 +19,7 @@ assignees: IRod22
 
 ## As a future core member, how confident do you feel about helping enforce the [Code of Conduct](https://github.com/IRod22/NimbleUI/blob/release/CODE_OF_CONDUCT.md)?
 
-<!-- Required. As stated in the Code of Conduct, all core members are required to uphold the Community Guidelines. Be honest, thoughtful, and thorough about how confident you feel about enforcing the Community Guidelines. -->
+<!-- Required. All core members are required to uphold the Community Guidelines. Be honest, thoughtful, and thorough about how confident you feel about enforcing the Community Guidelines. -->
 
 
-<!-- Thank you for wanting to join the NimbleUI core team! -->
+<!-- Thank you for your time! -->
