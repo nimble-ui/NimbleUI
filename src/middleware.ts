@@ -1,1 +1,1 @@
-export * from './core/middleware'
+export * from './internal/core/middleware'

@@ -1,1 +1,1 @@
-export * from './client/index'
+export * from './internal/client/index'
