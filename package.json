@@ -2,14 +2,23 @@
   "name": "nimble-ui",
   "version": "0.0.25",
   "description": "A Nimble User Interface Library",
-  "main": "index.js",
+  "main": "./lib/index.js",
+  "types": "./lib/types.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client",
+    "./middleware": "./lib/middleware"
+  },
   "scripts": {
-    "build": "node esbuild.js"
+    "build": "tsc"
   },
   "keywords": [
     "ui",
     "library"
   ],
   "author": "Ivan Rodriguez <ivan18rod@yahoo.com>",
-  "license": "HL3"
+  "license": "HL3",
+  "devDependencies": {
+    "typescript": "4.9.4"
+  }
 }
