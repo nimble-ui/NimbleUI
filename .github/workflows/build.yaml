@@ -1,0 +1,18 @@
+name: Build Library
+
+on:
+  push:
+    branches: [ publish ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ./.github/workflows/setup.yaml
+      - name: Build
+        run: npm run build
+      - uses: ./.github/workflows/save.yaml
+        with:
+          commit_message: 'build: build library'
