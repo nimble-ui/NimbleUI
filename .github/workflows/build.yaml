@@ -11,9 +11,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/workflows/setup.yaml
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: [16.x, 17.x, 18.x]
+      - name: Install Dependencies
+        run: npm i
       - name: Build
         run: npm run build
-      - uses: ./.github/workflows/save.yaml
+      - name: Save
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'build: build library'
+          branch: ${{ github.head_ref }}
