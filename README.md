@@ -29,7 +29,7 @@ NimbleUI has two parts:
 As of right now, NimbleUI is not on the NPM registry; the library will need to be installed from GitHub:
 
 ```ps1
-> npm i -s git+https://github.com/IRod22/NimbleUI/tree/publish
+> npm i -s git+https://github.com/nimble-ui/NimbleUI/tree/publish
 ```
 
 ### Hello, NimbleUI!
