@@ -1,5 +1,5 @@
 import { e, t, _, c, f, attr, on, each, when } from '../../../src/index'
-import mount from '../../../src/client/index'
+import mount from '../../../src/client'
 import { Component, Middleware } from '../../../src/types'
 import { State } from '../../../src/middleware'
 
