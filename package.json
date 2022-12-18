@@ -6,16 +6,16 @@
   "types": "./index.d.ts",
   "exports": {
     ".": {
-      "default": "./index.js",
-      "types": "./index.d.ts"
+      "types": "./index.d.ts",
+      "default": "./index.js"
     },
     "./client": {
-      "default":"./client.js",
-      "types": "./client.d.ts"
+      "types": "./client.d.ts",
+      "default":"./client.js"
     },
     "./middleware": {
-      "default":"./middleware.js",
-      "types": "./middleware.d.ts"
+      "types": "./middleware.d.ts",
+      "default":"./middleware.js"
     },
     "./types": {
       "types": "./types.d.ts"
