@@ -4,6 +4,7 @@
     "module": "ES2020",
     "strict": true,
     "esModuleInterop": true,
+    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./lib",
   },

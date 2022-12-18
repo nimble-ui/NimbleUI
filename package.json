@@ -1,13 +1,13 @@
 {
   "name": "nimble-ui",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "A Nimble User Interface Library",
   "main": "./lib/index.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": "./lib/index.js",
-    "./client": "./lib/client",
-    "./middleware": "./lib/middleware"
+    "./client": "./lib/client.js",
+    "./middleware": "./lib/middleware.js"
   },
   "scripts": {
     "build": "tsc"
