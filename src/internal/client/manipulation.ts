@@ -39,12 +39,13 @@ function areSameNodes(i: INode, v: INode): boolean {
     })
 }
 
-export function diffAttrs(node: Element, current: Attrs, target: Attrs) {
+export function diffAttrs(node: Element, type: string, current: Attrs, target: Attrs) {
     const currentKeys = Object.keys(current), targetKeys = Object.keys(target)
     const unionKeys = [...currentKeys, ...targetKeys.filter(k => !currentKeys.includes(k))]
     for (const k of unionKeys) {
         if (!targetKeys.includes(k)) {
             node.setAttribute(k, '')
+            if (k == 'value' && type == 'input') (node as HTMLInputElement).value = ''
             node.removeAttribute(k)
         }
         else if (!currentKeys.includes(k)) node.setAttribute(k, target[k])
@@ -150,7 +151,7 @@ export class VElement implements VNode {
         this.children = children
     }
     public setAttributes(attrs: Attrs) {
-        diffAttrs(this.el, this.attrs, attrs)
+        diffAttrs(this.el, this.name, this.attrs, attrs)
         this.attrs = attrs
     }
     public setEventListeners(events: Events) {
