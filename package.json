@@ -6,15 +6,15 @@
   "types": "./index.d.ts",
   "exports": {
     ".": {
-      "esm": "./index.js",
+      "default": "./index.js",
       "types": "./index.d.ts"
     },
     "./client": {
-      "esm":"./client.js",
+      "default":"./client.js",
       "types": "./client.d.ts"
     },
     "./middleware": {
-      "esm":"./middleware.js",
+      "default":"./middleware.js",
       "types": "./middleware.d.ts"
     },
     "./types": {
