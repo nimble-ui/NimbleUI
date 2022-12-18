@@ -5,9 +5,21 @@
   "main": "./lib/index.js",
   "types": "./lib/types.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./client": "./lib/client.js",
-    "./middleware": "./lib/middleware.js"
+    ".": {
+      "esm": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./client": {
+      "esm":"./lib/client.js",
+      "types": "./lib/client.d.ts"
+    },
+    "./middleware": {
+      "esm":"./lib/middleware.js",
+      "types": "./lib/middleware.d.ts"
+    },
+    "./types": {
+      "types": "./lib/types.d.ts"
+    }
   },
   "scripts": {
     "build": "tsc"

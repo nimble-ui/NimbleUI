@@ -19,6 +19,7 @@ jobs:
         run: npm i
       - name: Build
         run: npm run build
+      - run: cp /src/types.d.ts /lib/
       - name: Save
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
