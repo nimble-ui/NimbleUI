@@ -3,7 +3,7 @@
   "version": "0.0.27",
   "description": "A Nimble User Interface Library",
   "main": "./lib/index.js",
-  "types": "./lib/types.d.ts",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "esm": "./lib/index.js",
