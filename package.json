@@ -11,18 +11,18 @@
     },
     "./client": {
       "types": "./client.d.ts",
-      "default":"./client.js"
+      "default": "./client.js"
     },
     "./middleware": {
       "types": "./middleware.d.ts",
-      "default":"./middleware.js"
+      "default": "./middleware.js"
     },
     "./types": {
       "types": "./types.d.ts"
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "node typedoc.js"
   },
   "keywords": [
     "ui",
@@ -31,6 +31,8 @@
   "author": "Ivan Rodriguez <ivan18rod@yahoo.com>",
   "license": "HL3",
   "devDependencies": {
+    "typedoc": "^0.23.23",
+    "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "4.9.4"
   }
 }
