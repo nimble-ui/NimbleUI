@@ -8,7 +8,7 @@ import type { Render } from '../shared/types'
  * @param root the root element to render `template` to
  * @returns an object to update and shut down the view.
  */
-export default function mount(template: Render, root: HTMLElement) {
+export function mount(template: Render, root: HTMLElement) {
     let rerender = () => {}, children: INode[] = []
     const rendered = render(template, [], () => rerender())
     rerender = () => {
