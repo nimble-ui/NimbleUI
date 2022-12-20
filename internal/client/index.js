@@ -1,6 +1,12 @@
 import { setChildren } from './manipulation';
 import { render } from './render';
-export default function mount(template, root) {
+/**
+ * Mounts the application
+ * @param template the template to render to `root`
+ * @param root the root element to render `template` to
+ * @returns an object to update and shut down the view.
+ */
+export function mount(template, root) {
     let rerender = () => { }, children = [];
     const rendered = render(template, [], () => rerender());
     rerender = () => {
