@@ -6,11 +6,11 @@ export type INode = <T>(i: {
     element(id: string, name: string, node: Element): T
 }) => T
 
-function text(id: string, node: Text): INode {
+export function text(id: string, node: Text): INode {
     return i => i.text(id, node)
 }
 
-function element(id: string, name: string, node: Element): INode {
+export function element(id: string, name: string, node: Element): INode {
     return i => i.element(id, name, node)
 }
 
@@ -111,61 +111,4 @@ export function setChildren(node: Element, currentChildren: INode[], newChildren
             node.removeChild(el)
         },
     }))
-}
-
-export interface VNode {
-    getChildren(): INode[]
-}
-
-export class VText implements VNode {
-    private txt = document.createTextNode(this.textContent)
-    constructor(
-        private textContent: string,
-        private ID: string
-    ) {}
-    public getChildren(): INode[] {
-        return this.textContent ? [text(this.ID, this.txt)] : []
-    }
-    public setText(txt: string) {
-        if (txt == this.textContent) return
-        this.textContent = txt
-        this.txt.textContent = txt
-    }
-}
-
-export class VElement implements VNode {
-    private el = document.createElement(this.name)
-    private children: INode[] = []
-    private attrs: Attrs = {}
-    private events: Events = {}
-    constructor(
-        private name: string,
-        private ID: string
-    ) {}
-    public getChildren(): INode[] {
-        return [element(this.ID, this.name, this.el)]
-    }
-    public setChildren(childNodes: VNode[]) {
-        const children = childNodes.reduce((nodes, vNode) => [...nodes, ...vNode.getChildren()], [] as INode[])
-        setChildren(this.el, this.children, children)
-        this.children = children
-    }
-    public setAttributes(attrs: Attrs) {
-        diffAttrs(this.el, this.name, this.attrs, attrs)
-        this.attrs = attrs
-    }
-    public setEventListeners(events: Events) {
-        diffEvents(this.el, this.events, events)
-        this.events = events
-    }
-}
-
-export class VFragment implements VNode {
-    private children: INode[] = []
-    public getChildren(): INode[] {
-        return this.children
-    }
-    public setChildren(childNodes: VNode[]) {
-        this.children = childNodes.reduce((nodes, vNode) => [...nodes, ...vNode.getChildren()], [] as INode[])
-    }
 }

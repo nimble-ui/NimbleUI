@@ -1,10 +1,9 @@
 import { noop } from '../shared/utils'
-import { VText, VElement, VFragment, VNode, Attrs, Events } from './manipulation'
+import { setChildren, diffAttrs, diffEvents, Attrs, Events, INode, text, element } from './manipulation'
 import type { Render, Component, Accessor, MiddlewareContext } from '../shared/types'
 
 type Renderer = {
-    node: VNode,
-    render(): void,
+    render(): INode[],
     unmount(): void,
 }
 
@@ -15,28 +14,36 @@ export function render(
 ): Renderer {
     return template({
         text(t) {
+            const txt = document.createTextNode(t)
             return {
-                node: new VText(t, ids.join('_')) as VNode,
-                render: noop,
+                render() {
+                    return t ? [text(ids.join('_'), txt)]: []
+                },
                 unmount: noop,
             }
         },
         dynamic(t) {
-            const txt = new VText(`${t()}`, ids.join('_'))
+            let content = `${t()}`
+            const txt = document.createTextNode(`${t()}`), id = ids.join('_')
             return {
-                node: txt as VNode,
                 render() {
-                    txt.setText(`${t()}`)
+                    const newContent = `${t()}`
+                    if (newContent != content) {
+                        content = txt.textContent = newContent
+                    }
+                    return content ? [text(id, txt)] : []
                 },
                 unmount: noop,
             }
         },
         element(name, attrs, children) {
-            const el = new VElement(name, ids.join('_')), childRenderers = children.map((c, i) => render(c, [`${i}`], requestUpdate))
+            let currentAttrs: Attrs = {}, currentEvents: Events = {}, currentChildren: INode[] = []
+            const el = document.createElement(name), id = ids.join('_'), childRenderers = children.map((c, i) => render(c, [`${i}`], requestUpdate))
             return {
-                node: el as VNode,
                 render() {
-                    let a: Attrs = {}, e: Events = {}
+                    let a: Attrs = {}, e: Events = {}, newChildren = childRenderers.reduce((children, c) => {
+                        return [...children, ...c.render()]
+                    }, [] as INode[])
                     attrs.forEach(attr => attr({
                         attr(name, value) {
                             const v = value()
@@ -48,12 +55,13 @@ export function render(
                             if (l) e = {...e, [name]: l}
                         },
                     }))
-                    el.setAttributes(a)
-                    el.setEventListeners(e)
-                    el.setChildren(childRenderers.map(c => {
-                        c.render()
-                        return c.node
-                    }))
+                    diffAttrs(el, name, currentAttrs, a)
+                    diffEvents(el, currentEvents, e)
+                    setChildren(el, currentChildren, newChildren)
+                    currentAttrs = a
+                    currentEvents = e
+                    currentChildren = newChildren
+                    return [element(id, name, el)]
                 },
                 unmount() {
                     for (const c of childRenderers) {
@@ -92,11 +100,11 @@ export function render(
             const rendered = render(instance, ids, requestUpdate), unmount = mounted()
             update = requestUpdate
             return {
-                node: rendered.node,
                 render() {
                     currentProps = props()
-                    rendered.render()
+                    const content = rendered.render()
                     updated()
+                    return content
                 },
                 unmount() {
                     unmount()
@@ -106,15 +114,12 @@ export function render(
             }
         },
         fragment(children) {
-            const childRenderers = children.map((c, i) => render(c, [...ids, `${i}`], requestUpdate)),
-            frag = new VFragment
+            const childRenderers = children.map((c, i) => render(c, [...ids, `${i}`], requestUpdate))
             return {
-                node: frag as VNode,
                 render() {
-                    frag.setChildren(childRenderers.map(c => {
-                        c.render()
-                        return c.node
-                    }))
+                    return childRenderers.reduce((children, c) => {
+                        return [...children, ...c.render()]
+                    }, [] as INode[])
                 },
                 unmount() {
                     for (const c of childRenderers) {
@@ -126,11 +131,9 @@ export function render(
         when(cond, then, alt) {
             const getCond = () => cond() ? true : false,
             renderThen = () => render(then, [...ids, 'then'], requestUpdate),
-            renderAlt = () => render(alt, [...ids, 'else'], requestUpdate),
-            frag = new VFragment()
+            renderAlt = () => render(alt, [...ids, 'else'], requestUpdate)
             let currentCond = getCond(), currentRenderer = currentCond ? renderThen() : renderAlt()
             return {
-                node: frag as VNode,
                 render() {
                     const newCond = getCond()
                     if (currentCond != newCond) {
@@ -138,8 +141,7 @@ export function render(
                         currentCond = newCond
                         currentRenderer = currentCond ? renderThen() : renderAlt()
                     }
-                    currentRenderer.render()
-                    frag.setChildren([currentRenderer.node])
+                    return currentRenderer.render()
                 },
                 unmount() {
                     currentRenderer.unmount()
@@ -157,8 +159,7 @@ export function render(
                     item,
                     id: `${tb(item, index, i)}`,
                 }))
-            },
-            frag = new VFragment()
+            }
             class Item {
                 public render = render(
                     renderItems(() => this.item, () => this.index, items),
@@ -173,7 +174,6 @@ export function render(
             }
             let currentItems: Item[] = []
             return {
-                node: frag as VNode,
                 render() {
                     let newItems = getItems(), discard: Item[] = [], completed: Item[] = []
                     for (const item of currentItems) {
@@ -200,11 +200,10 @@ export function render(
                     }
                     discard.forEach(d => d.render.unmount())
                     currentItems = completed
-                    frag.setChildren(currentItems.map((item, i) => {
-                        item.index = i
-                        item.render.render()
-                        return item.render.node
-                    }))
+                    return currentItems.reduce((children, c, i) => {
+                        c.index = i
+                        return [...children, ...c.render.render()]
+                    }, [] as INode[])
                 },
                 unmount() {
                     currentItems.forEach(r => r.render.unmount())
