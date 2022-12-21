@@ -12,8 +12,7 @@ export function mount(template: Render, root: HTMLElement) {
     let rerender = () => {}, children: INode[] = []
     const rendered = render(template, [], () => rerender())
     rerender = () => {
-        rendered.render()
-        const newChildren = rendered.node.getChildren()
+        const newChildren = rendered.render()
         setChildren(root, children, newChildren)
         children = newChildren
     }
