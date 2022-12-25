@@ -1,4 +1,4 @@
-[API Docs - v0.0.28](../README.md) / client
+[API Docs - v0.1.0](../README.md) / client
 
 # Module: client
 
@@ -36,4 +36,4 @@ an object to update and shut down the view.
 
 #### Defined in
 
-[internal/client/index.ts:11](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/client/index.ts#L11)
+[internal/client/index.ts:11](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/client/index.ts#L11)

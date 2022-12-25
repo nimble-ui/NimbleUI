@@ -1,8 +1,7 @@
-import { VNode } from './manipulation';
+import { INode } from './manipulation';
 import type { Render } from '../shared/types';
 type Renderer = {
-    node: VNode;
-    render(): void;
+    render(): INode[];
     unmount(): void;
 };
 export declare function render(template: Render, ids: string[], requestUpdate: () => void): Renderer;

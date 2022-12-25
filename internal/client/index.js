@@ -10,8 +10,7 @@ export function mount(template, root) {
     let rerender = () => { }, children = [];
     const rendered = render(template, [], () => rerender());
     rerender = () => {
-        rendered.render();
-        const newChildren = rendered.node.getChildren();
+        const newChildren = rendered.render();
         setChildren(root, children, newChildren);
         children = newChildren;
     };

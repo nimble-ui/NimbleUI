@@ -1,4 +1,4 @@
-[API Docs - v0.0.28](../README.md) / types
+[API Docs - v0.1.0](../README.md) / types
 
 # Module: types
 
@@ -38,7 +38,7 @@ A factory function that is used to access dynamic values.
 
 #### Defined in
 
-[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L5)
+[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L5)
 
 ___
 
@@ -72,7 +72,7 @@ An algebraic data type for declaring attributes.
 
 #### Defined in
 
-[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L10)
+[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L10)
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 #### Defined in
 
-[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L51)
+[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L51)
 
 ___
 
@@ -121,7 +121,7 @@ A representation component lifecycle hooks
 
 #### Defined in
 
-[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L18)
+[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L18)
 
 ___
 
@@ -154,7 +154,7 @@ A function to access a component's internal API.
 
 #### Defined in
 
-[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L49)
+[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L49)
 
 ___
 
@@ -181,7 +181,7 @@ A context for middleware to hook into components.
 
 #### Defined in
 
-[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L26)
+[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L26)
 
 ___
 
@@ -220,4 +220,4 @@ A render instruction used for CSR or SSR.
 
 #### Defined in
 
-[internal/shared/types.ts:56](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/shared/types.ts#L56)
+[internal/shared/types.ts:56](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L56)

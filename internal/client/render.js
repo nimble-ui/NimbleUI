@@ -1,30 +1,38 @@
 import { noop } from '../shared/utils';
-import { VText, VElement, VFragment } from './manipulation';
+import { setChildren, diffAttrs, diffEvents, text, element } from './manipulation';
 export function render(template, ids, requestUpdate) {
     return template({
         text(t) {
+            const txt = document.createTextNode(t);
             return {
-                node: new VText(t, ids.join('_')),
-                render: noop,
+                render() {
+                    return t ? [text(ids.join('_'), txt)] : [];
+                },
                 unmount: noop,
             };
         },
         dynamic(t) {
-            const txt = new VText(`${t()}`, ids.join('_'));
+            let content = `${t()}`;
+            const txt = document.createTextNode(`${t()}`), id = ids.join('_');
             return {
-                node: txt,
                 render() {
-                    txt.setText(`${t()}`);
+                    const newContent = `${t()}`;
+                    if (newContent != content) {
+                        content = txt.textContent = newContent;
+                    }
+                    return content ? [text(id, txt)] : [];
                 },
                 unmount: noop,
             };
         },
         element(name, attrs, children) {
-            const el = new VElement(name, ids.join('_')), childRenderers = children.map((c, i) => render(c, [`${i}`], requestUpdate));
+            let currentAttrs = {}, currentEvents = {}, currentChildren = [];
+            const el = document.createElement(name), id = ids.join('_'), childRenderers = children.map((c, i) => render(c, [`${i}`], requestUpdate));
             return {
-                node: el,
                 render() {
-                    let a = {}, e = {};
+                    let a = {}, e = {}, newChildren = childRenderers.reduce((children, c) => {
+                        return [...children, ...c.render()];
+                    }, []);
                     attrs.forEach(attr => attr({
                         attr(name, value) {
                             const v = value();
@@ -39,12 +47,13 @@ export function render(template, ids, requestUpdate) {
                                 e = Object.assign(Object.assign({}, e), { [name]: l });
                         },
                     }));
-                    el.setAttributes(a);
-                    el.setEventListeners(e);
-                    el.setChildren(childRenderers.map(c => {
-                        c.render();
-                        return c.node;
-                    }));
+                    diffAttrs(el, name, currentAttrs, a);
+                    diffEvents(el, currentEvents, e);
+                    setChildren(el, currentChildren, newChildren);
+                    currentAttrs = a;
+                    currentEvents = e;
+                    currentChildren = newChildren;
+                    return [element(id, name, el)];
                 },
                 unmount() {
                     for (const c of childRenderers) {
@@ -80,11 +89,11 @@ export function render(template, ids, requestUpdate) {
             const rendered = render(instance, ids, requestUpdate), unmount = mounted();
             update = requestUpdate;
             return {
-                node: rendered.node,
                 render() {
                     currentProps = props();
-                    rendered.render();
+                    const content = rendered.render();
                     updated();
+                    return content;
                 },
                 unmount() {
                     unmount();
@@ -94,14 +103,12 @@ export function render(template, ids, requestUpdate) {
             };
         },
         fragment(children) {
-            const childRenderers = children.map((c, i) => render(c, [...ids, `${i}`], requestUpdate)), frag = new VFragment;
+            const childRenderers = children.map((c, i) => render(c, [...ids, `${i}`], requestUpdate));
             return {
-                node: frag,
                 render() {
-                    frag.setChildren(childRenderers.map(c => {
-                        c.render();
-                        return c.node;
-                    }));
+                    return childRenderers.reduce((children, c) => {
+                        return [...children, ...c.render()];
+                    }, []);
                 },
                 unmount() {
                     for (const c of childRenderers) {
@@ -111,10 +118,9 @@ export function render(template, ids, requestUpdate) {
             };
         },
         when(cond, then, alt) {
-            const getCond = () => cond() ? true : false, renderThen = () => render(then, [...ids, 'then'], requestUpdate), renderAlt = () => render(alt, [...ids, 'else'], requestUpdate), frag = new VFragment();
+            const getCond = () => cond() ? true : false, renderThen = () => render(then, [...ids, 'then'], requestUpdate), renderAlt = () => render(alt, [...ids, 'else'], requestUpdate);
             let currentCond = getCond(), currentRenderer = currentCond ? renderThen() : renderAlt();
             return {
-                node: frag,
                 render() {
                     const newCond = getCond();
                     if (currentCond != newCond) {
@@ -122,8 +128,7 @@ export function render(template, ids, requestUpdate) {
                         currentCond = newCond;
                         currentRenderer = currentCond ? renderThen() : renderAlt();
                     }
-                    currentRenderer.render();
-                    frag.setChildren([currentRenderer.node]);
+                    return currentRenderer.render();
                 },
                 unmount() {
                     currentRenderer.unmount();
@@ -137,7 +142,7 @@ export function render(template, ids, requestUpdate) {
                     item,
                     id: `${tb(item, index, i)}`,
                 }));
-            }, frag = new VFragment();
+            };
             class Item {
                 constructor(item, index, id) {
                     this.item = item;
@@ -148,7 +153,6 @@ export function render(template, ids, requestUpdate) {
             }
             let currentItems = [];
             return {
-                node: frag,
                 render() {
                     let newItems = getItems(), discard = [], completed = [];
                     for (const item of currentItems) {
@@ -178,11 +182,10 @@ export function render(template, ids, requestUpdate) {
                     }
                     discard.forEach(d => d.render.unmount());
                     currentItems = completed;
-                    frag.setChildren(currentItems.map((item, i) => {
-                        item.index = i;
-                        item.render.render();
-                        return item.render.node;
-                    }));
+                    return currentItems.reduce((children, c, i) => {
+                        c.index = i;
+                        return [...children, ...c.render.render()];
+                    }, []);
                 },
                 unmount() {
                     currentItems.forEach(r => r.render.unmount());

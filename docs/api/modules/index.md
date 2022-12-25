@@ -1,4 +1,4 @@
-[API Docs - v0.0.28](../README.md) / index
+[API Docs - v0.1.0](../README.md) / index
 
 # Module: index
 
@@ -36,7 +36,7 @@ Renders a dynamic text node to the document.
 
 #### Defined in
 
-[internal/core/index.ts:15](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L15)
+[internal/core/index.ts:15](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L15)
 
 ___
 
@@ -59,7 +59,7 @@ Adds an attribute to the consuming element
 
 #### Defined in
 
-[internal/core/index.ts:34](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L34)
+[internal/core/index.ts:34](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L34)
 
 ___
 
@@ -88,7 +88,7 @@ Renders a component.
 
 #### Defined in
 
-[internal/core/index.ts:52](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L52)
+[internal/core/index.ts:52](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L52)
 
 ___
 
@@ -112,7 +112,7 @@ Renders an HTML element to the document.
 
 #### Defined in
 
-[internal/core/index.ts:25](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L25)
+[internal/core/index.ts:25](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L25)
 
 ___
 
@@ -143,7 +143,7 @@ Renders a list of items to the document.
 
 #### Defined in
 
-[internal/core/index.ts:82](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L82)
+[internal/core/index.ts:82](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L82)
 
 ___
 
@@ -165,7 +165,7 @@ Renders a fragment, or a group of child nodes, to the document.
 
 #### Defined in
 
-[internal/core/index.ts:63](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L63)
+[internal/core/index.ts:63](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L63)
 
 ___
 
@@ -188,7 +188,7 @@ Adds an event listener to the consuming element
 
 #### Defined in
 
-[internal/core/index.ts:43](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L43)
+[internal/core/index.ts:43](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L43)
 
 ___
 
@@ -210,7 +210,7 @@ Renders a static text node to the document.
 
 #### Defined in
 
-[internal/core/index.ts:7](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L7)
+[internal/core/index.ts:7](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L7)
 
 ___
 
@@ -234,4 +234,4 @@ Conditionally renders content
 
 #### Defined in
 
-[internal/core/index.ts:73](https://github.com/nimble-ui/NimbleUI/blob/ed98e21/src/internal/core/index.ts#L73)
+[internal/core/index.ts:73](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L73)
