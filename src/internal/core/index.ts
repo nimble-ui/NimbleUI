@@ -97,7 +97,7 @@ export function each<TItem>(
         trackBy?: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
     },
     renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render,
-    alt: Render
+    alt: Render = f()
 ): Render {
     const template = (context: () => {item: TItem, index: number, array: TItem[]}) => renderItems(
         () => context().item,
