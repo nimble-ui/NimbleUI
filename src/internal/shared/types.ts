@@ -50,6 +50,8 @@ export type Middleware<Props extends Record<string, any>, T> = (ctx: MiddlewareC
 
 export type Component<Props extends Record<string, any>> = (use: <T>(m: Middleware<Props, T>) => T) => Render
 
+export type Block = <T>(block: <Context>(id: string, template: (context: Accessor<Context>) => Render, context: Context) => T) => T
+
 /**
  * A render instruction used for CSR or SSR.
  */
@@ -62,10 +64,5 @@ export type Render = <T>(render: {
         props: Accessor<Props>
     ): T,
     fragment(children: Render[]): T,
-    when(cond: Accessor, then: Render, alt: Render): T,
-    each<TItem>(
-        items: Accessor<TItem[]>,
-        trackBy: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
-        renderItem: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
-    ): T,
+    directive(blocks: Accessor<Block[]>): T,
 }) => T

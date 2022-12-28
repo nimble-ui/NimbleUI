@@ -1,4 +1,4 @@
-import type { Render, Accessor, Attrs, Component } from '../shared/types'
+import type { Render, Accessor, Attrs, Component, Block } from '../shared/types'
 
 /**
  * Renders a static text node to the document.
@@ -64,14 +64,25 @@ export function f(children: Render[] = []): Render {
     return render => render.fragment(children)
 }
 
+export function directive(blocks: Accessor<Block[]>): Render {
+    return render => render.directive(blocks)
+}
+
+export function block<Context>(id: string, template: (context: Accessor<Context>) => Render, context: Context): Block {
+    return block => block(id, template, context)
+}
+
 /**
  * Conditionally renders content
  * @param cond an accessor containing the condition to test
  * @param then child nodes to render if the condition is truthy
  * @param alt child nodes to render if the condition is falsey
  */
-export function when(cond: Accessor, then: Render, alt: Render = f()): Render {
-    return ctx => ctx.when(cond, then, alt)
+export function when(cond: Accessor, then: Render, alt: Render = f()) {
+    return directive(() => {
+        if (cond()) return [block('if:then', () => then, null)]
+        else return [block('if:else', () => alt, null)]
+    })
 }
 
 /**
@@ -86,5 +97,13 @@ export function each<TItem>(
     },
     renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
 ): Render {
-    return ctx => ctx.each(items, trackBy, renderItems)
+    const template = (context: () => {item: TItem, index: number, array: TItem[]}) => renderItems(
+        () => context().item,
+        () => context().index,
+        () => context().array,
+    )
+    return directive(() => {
+        const tb = trackBy(), i = items()
+        return i.map((item, index) => block(`for:${tb(item, index, i)}`, template, {item,index,array: i}))
+    })
 }
