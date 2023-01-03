@@ -64,10 +64,23 @@ export function f(children: Render[] = []): Render {
     return render => render.fragment(children)
 }
 
+/**
+ * Allows for conditional and list rendering with a Virtual DOM-like approach.
+ * This allows control flow customizability and cross-platform compatability, meaning the consuming API can be rendered in CSR, SSR, and SSG environments.
+ * @see when and @see each for examples.
+ * @param blocks A factory function that returns an array of blocks to be rendered to the DOM; @see block for details
+ * @returns 
+ */
 export function directive(blocks: Accessor<Block[]>): Render {
     return render => render.directive(blocks)
 }
 
+/**
+ * Adds a block to a `directive`'s blocks array
+ * @param id the block's id used to track the block
+ * @param template a factory function to render when the block is created or updated
+ * @param context a context that a block uses in the `template`
+ */
 export function block<Context>(id: string, template: (context: Accessor<Context>) => Render, context: Context): Block {
     return block => block(id, template, context)
 }
