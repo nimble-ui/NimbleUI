@@ -1,4 +1,4 @@
-import type { Render, Accessor, Attrs, Component } from '../shared/types'
+import type { Render, Accessor, Attrs, Component, Block } from '../shared/types'
 
 /**
  * Renders a static text node to the document.
@@ -65,26 +65,61 @@ export function f(children: Render[] = []): Render {
 }
 
 /**
+ * Allows for conditional and list rendering with a Virtual DOM-like approach.
+ * This allows control flow customizability and cross-platform compatability, meaning the consuming API can be rendered in CSR, SSR, and SSG environments.
+ * @see when and @see each for examples.
+ * @param blocks A factory function that returns an array of blocks to be rendered to the DOM; @see block for details
+ * @returns 
+ */
+export function directive(blocks: Accessor<Block[]>): Render {
+    return render => render.directive(blocks)
+}
+
+/**
+ * Adds a block to a `directive`'s blocks array
+ * @param id the block's id used to track the block
+ * @param template a factory function to render when the block is created or updated
+ * @param context a context that a block uses in the `template`
+ */
+export function block<Context>(id: string, template: (context: Accessor<Context>) => Render, context: Context): Block {
+    return block => block(id, template, context)
+}
+
+/**
  * Conditionally renders content
  * @param cond an accessor containing the condition to test
  * @param then child nodes to render if the condition is truthy
  * @param alt child nodes to render if the condition is falsey
  */
-export function when(cond: Accessor, then: Render, alt: Render = f()): Render {
-    return ctx => ctx.when(cond, then, alt)
+export function when(cond: Accessor, then: Render, alt: Render = f()) {
+    return directive(() => {
+        if (cond()) return [block('if:then', () => then, null)]
+        else return [block('if:else', () => alt, null)]
+    })
 }
 
 /**
  * Renders a list of items to the document.
  * @param ... has two properties: `items` contains the items to iterate over, and `trackBy` contains a function to track each item
  * @param renderItems a function that returns a render instruction for each item
+ * @param alt a render instruction to render when the `items` array is empty
  */
 export function each<TItem>(
     {items, trackBy = () => (_, idx) => idx}: {
         items: Accessor<TItem[]>,
         trackBy?: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
     },
-    renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
+    renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render,
+    alt: Render = f()
 ): Render {
-    return ctx => ctx.each(items, trackBy, renderItems)
+    const template = (context: () => {item: TItem, index: number, array: TItem[]}) => renderItems(
+        () => context().item,
+        () => context().index,
+        () => context().array,
+    )
+    return directive(() => {
+        const tb = trackBy(), i = items()
+        if (i.length == 0) return [block('for:empty', () => alt, null)]
+        return i.map((item, index) => block(`for:item(${tb(item, index, i)})`, template, {item,index,array: i}))
+    })
 }

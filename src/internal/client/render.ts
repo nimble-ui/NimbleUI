@@ -1,6 +1,6 @@
 import { noop } from '../shared/utils'
 import { setChildren, diffAttrs, diffEvents, Attrs, Events, INode, text, element } from './manipulation'
-import type { Render, Component, Accessor, MiddlewareContext } from '../shared/types'
+import type { Render, Component, Accessor, MiddlewareContext, Block } from '../shared/types'
 
 type Renderer = {
     render(): INode[],
@@ -128,85 +128,52 @@ export function render(
                 },
             }
         },
-        when(cond, then, alt) {
-            const getCond = () => cond() ? true : false,
-            renderThen = () => render(then, [...ids, 'then'], requestUpdate),
-            renderAlt = () => render(alt, [...ids, 'else'], requestUpdate)
-            let currentCond = getCond(), currentRenderer = currentCond ? renderThen() : renderAlt()
-            return {
-                render() {
-                    const newCond = getCond()
-                    if (currentCond != newCond) {
-                        currentRenderer.unmount()
-                        currentCond = newCond
-                        currentRenderer = currentCond ? renderThen() : renderAlt()
-                    }
-                    return currentRenderer.render()
-                },
-                unmount() {
-                    currentRenderer.unmount()
-                },
-            }
-        },
-        each<TItem>(
-            items: Accessor<TItem[]>,
-            trackBy: Accessor<(item: TItem, index: number, array: TItem[]) => any>,
-            renderItems: (item: Accessor<TItem>, index: Accessor<number>, array: Accessor<TItem[]>) => Render
-        ) {
-            const getItems = () => {
-                const tb = trackBy(), i = items()
-                return i.map((item, index) => ({
-                    item,
-                    id: `${tb(item, index, i)}`,
-                }))
-            }
-            class Item {
+        directive(blocks) {
+            class BlockInstance<Context> {
                 public render = render(
-                    renderItems(() => this.item, () => this.index, items),
-                    [...ids, `item:${this.id}`],
-                    requestUpdate
+                    this.template(() => this.context),
+                    [...ids, this.id],
+                    requestUpdate,
                 )
                 constructor(
-                    public item: TItem,
-                    public index: number,
-                    public id: string
+                    public id: string,
+                    public template: (context: Accessor<Context>) => Render,
+                    public context: Context,
                 ) {}
             }
-            let currentItems: Item[] = []
+            const id = (b: Block) => b(id => id)
+            let currentBlocks: BlockInstance<any>[] = []
             return {
                 render() {
-                    let newItems = getItems(), discard: Item[] = [], completed: Item[] = []
-                    for (const item of currentItems) {
-                        if (newItems.length == 0) {
-                            discard = [...discard, ...currentItems]
+                    let newBlocks = blocks(), discard: BlockInstance<any>[] = [], completed: BlockInstance<any>[] = []
+                    for (const block of currentBlocks) {
+                        if (newBlocks.length == 0) {
+                            discard = [...discard, ...currentBlocks]
                             break
-                        } else if (newItems[0].id != item.id) {
-                            discard = [...discard, item]
+                        } else if (id(newBlocks[0]) != block.id) {
+                            discard = [...discard, block]
                         } else {
-                            item.item = newItems[0].item
-                            completed = [...completed, item]
-                            newItems = newItems.slice(1)
+                            block.context = newBlocks[0]((_, __, ctx) => ctx)
+                            completed = [...completed, block]
+                            newBlocks = newBlocks.slice(1)
                         }
                     }
-                    for (const item of newItems) {
-                        if (discard.some(discarded => discarded == item)) {
-                            const idx = discard.findIndex(discarded => discarded.id == item.id)
+                    for (const block of newBlocks) {
+                        if (discard.some(discarded => discarded.id == id(block))) {
+                            const idx = discard.findIndex(discarded => discarded.id == id(block))
                             completed = [...completed, discard[idx]]
                             discard = discard.filter((_, i) => i != idx)
                         } else {
-                            const i = new Item(item.item, completed.length - 1, item.id)
+                            const i = block<BlockInstance<any>>((id, template, context) => new BlockInstance(id, template, context))
                             completed = [...completed, i]
                         }
                     }
                     discard.forEach(d => d.render.unmount())
-                    currentItems = completed
-                    return currentItems.reduce((children, c, i) => {
-                        c.index = i
-                        return [...children, ...c.render.render()]
-                    }, [] as INode[])
+                    currentBlocks = completed
+                    return currentBlocks.reduce((children, c) => [...children, ...c.render.render()], [] as INode[])
                 },
                 unmount() {
-                    currentItems.forEach(r => r.render.unmount())
+                    currentBlocks.forEach(r => r.render.unmount())
                 },
             }
         }
