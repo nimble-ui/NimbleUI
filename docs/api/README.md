@@ -1,6 +1,6 @@
-API Docs - v0.1.0
+API Docs - v0.2.0
 
-# API Docs - v0.1.0
+# API Docs - v0.2.0
 
 ## Table of contents
 

@@ -53,19 +53,50 @@ export function f(children = []) {
     return render => render.fragment(children);
 }
 /**
+ * Allows for conditional and list rendering with a Virtual DOM-like approach.
+ * This allows control flow customizability and cross-platform compatability, meaning the consuming API can be rendered in CSR, SSR, and SSG environments.
+ * @see when and @see each for examples.
+ * @param blocks A factory function that returns an array of blocks to be rendered to the DOM; @see block for details
+ * @returns
+ */
+export function directive(blocks) {
+    return render => render.directive(blocks);
+}
+/**
+ * Adds a block to a `directive`'s blocks array
+ * @param id the block's id used to track the block
+ * @param template a factory function to render when the block is created or updated
+ * @param context a context that a block uses in the `template`
+ */
+export function block(id, template, context) {
+    return block => block(id, template, context);
+}
+/**
  * Conditionally renders content
  * @param cond an accessor containing the condition to test
  * @param then child nodes to render if the condition is truthy
  * @param alt child nodes to render if the condition is falsey
  */
 export function when(cond, then, alt = f()) {
-    return ctx => ctx.when(cond, then, alt);
+    return directive(() => {
+        if (cond())
+            return [block('if:then', () => then, null)];
+        else
+            return [block('if:else', () => alt, null)];
+    });
 }
 /**
  * Renders a list of items to the document.
  * @param ... has two properties: `items` contains the items to iterate over, and `trackBy` contains a function to track each item
  * @param renderItems a function that returns a render instruction for each item
+ * @param alt a render instruction to render when the `items` array is empty
  */
-export function each({ items, trackBy = () => (_, idx) => idx }, renderItems) {
-    return ctx => ctx.each(items, trackBy, renderItems);
+export function each({ items, trackBy = () => (_, idx) => idx }, renderItems, alt = f()) {
+    const template = (context) => renderItems(() => context().item, () => context().index, () => context().array);
+    return directive(() => {
+        const tb = trackBy(), i = items();
+        if (i.length == 0)
+            return [block('for:empty', () => alt, null)];
+        return i.map((item, index) => block(`for:item(${tb(item, index, i)})`, template, { item, index, array: i }));
+    });
 }

@@ -117,78 +117,51 @@ export function render(template, ids, requestUpdate) {
                 },
             };
         },
-        when(cond, then, alt) {
-            const getCond = () => cond() ? true : false, renderThen = () => render(then, [...ids, 'then'], requestUpdate), renderAlt = () => render(alt, [...ids, 'else'], requestUpdate);
-            let currentCond = getCond(), currentRenderer = currentCond ? renderThen() : renderAlt();
-            return {
-                render() {
-                    const newCond = getCond();
-                    if (currentCond != newCond) {
-                        currentRenderer.unmount();
-                        currentCond = newCond;
-                        currentRenderer = currentCond ? renderThen() : renderAlt();
-                    }
-                    return currentRenderer.render();
-                },
-                unmount() {
-                    currentRenderer.unmount();
-                },
-            };
-        },
-        each(items, trackBy, renderItems) {
-            const getItems = () => {
-                const tb = trackBy(), i = items();
-                return i.map((item, index) => ({
-                    item,
-                    id: `${tb(item, index, i)}`,
-                }));
-            };
-            class Item {
-                constructor(item, index, id) {
-                    this.item = item;
-                    this.index = index;
+        directive(blocks) {
+            class BlockInstance {
+                constructor(id, template, context) {
                     this.id = id;
-                    this.render = render(renderItems(() => this.item, () => this.index, items), [...ids, `item:${this.id}`], requestUpdate);
+                    this.template = template;
+                    this.context = context;
+                    this.render = render(this.template(() => this.context), [...ids, this.id], requestUpdate);
                 }
             }
-            let currentItems = [];
+            const id = (b) => b(id => id);
+            let currentBlocks = [];
             return {
                 render() {
-                    let newItems = getItems(), discard = [], completed = [];
-                    for (const item of currentItems) {
-                        if (newItems.length == 0) {
-                            discard = [...discard, ...currentItems];
+                    let newBlocks = blocks(), discard = [], completed = [];
+                    for (const block of currentBlocks) {
+                        if (newBlocks.length == 0) {
+                            discard = [...discard, ...currentBlocks];
                             break;
                         }
-                        else if (newItems[0].id != item.id) {
-                            discard = [...discard, item];
+                        else if (id(newBlocks[0]) != block.id) {
+                            discard = [...discard, block];
                         }
                         else {
-                            item.item = newItems[0].item;
-                            completed = [...completed, item];
-                            newItems = newItems.slice(1);
+                            block.context = newBlocks[0]((_, __, ctx) => ctx);
+                            completed = [...completed, block];
+                            newBlocks = newBlocks.slice(1);
                         }
                     }
-                    for (const item of newItems) {
-                        if (discard.some(discarded => discarded == item)) {
-                            const idx = discard.findIndex(discarded => discarded.id == item.id);
+                    for (const block of newBlocks) {
+                        if (discard.some(discarded => discarded.id == id(block))) {
+                            const idx = discard.findIndex(discarded => discarded.id == id(block));
                             completed = [...completed, discard[idx]];
                             discard = discard.filter((_, i) => i != idx);
                         }
                         else {
-                            const i = new Item(item.item, completed.length - 1, item.id);
+                            const i = block((id, template, context) => new BlockInstance(id, template, context));
                             completed = [...completed, i];
                         }
                     }
                     discard.forEach(d => d.render.unmount());
-                    currentItems = completed;
-                    return currentItems.reduce((children, c, i) => {
-                        c.index = i;
-                        return [...children, ...c.render.render()];
-                    }, []);
+                    currentBlocks = completed;
+                    return currentBlocks.reduce((children, c) => [...children, ...c.render.render()], []);
                 },
                 unmount() {
-                    currentItems.forEach(r => r.render.unmount());
+                    currentBlocks.forEach(r => r.render.unmount());
                 },
             };
         }

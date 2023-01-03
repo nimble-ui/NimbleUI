@@ -1,4 +1,4 @@
-[API Docs - v0.1.0](../README.md) / middleware
+[API Docs - v0.2.0](../README.md) / middleware
 
 # Module: middleware
 
@@ -31,7 +31,7 @@ Allows the component to access its lifecycle hooks
 
 #### Defined in
 
-[internal/core/middleware.ts:21](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/middleware.ts#L21)
+[internal/core/middleware.ts:21](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/middleware.ts#L21)
 
 ___
 
@@ -60,7 +60,7 @@ Gives access to the component's properties
 
 #### Defined in
 
-[internal/core/middleware.ts:7](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/middleware.ts#L7)
+[internal/core/middleware.ts:7](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/middleware.ts#L7)
 
 ___
 
@@ -82,7 +82,7 @@ Allows a function to manually refresh the component.
 
 #### Defined in
 
-[internal/core/middleware.ts:14](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/middleware.ts#L14)
+[internal/core/middleware.ts:14](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/middleware.ts#L14)
 
 ___
 
@@ -113,4 +113,4 @@ an object with a single property, `value`, so the component can read from and wr
 
 #### Defined in
 
-[internal/core/middleware.ts:30](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/middleware.ts#L30)
+[internal/core/middleware.ts:30](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/middleware.ts#L30)

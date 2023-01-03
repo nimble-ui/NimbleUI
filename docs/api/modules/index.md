@@ -1,4 +1,4 @@
-[API Docs - v0.1.0](../README.md) / index
+[API Docs - v0.2.0](../README.md) / index
 
 # Module: index
 
@@ -8,7 +8,9 @@
 
 - [\_](index.md#_)
 - [attr](index.md#attr)
+- [block](index.md#block)
 - [c](index.md#c)
+- [directive](index.md#directive)
 - [e](index.md#e)
 - [each](index.md#each)
 - [f](index.md#f)
@@ -36,7 +38,7 @@ Renders a dynamic text node to the document.
 
 #### Defined in
 
-[internal/core/index.ts:15](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L15)
+[internal/core/index.ts:15](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L15)
 
 ___
 
@@ -59,7 +61,37 @@ Adds an attribute to the consuming element
 
 #### Defined in
 
-[internal/core/index.ts:34](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L34)
+[internal/core/index.ts:34](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L34)
+
+___
+
+### block
+
+▸ **block**<`Context`\>(`id`, `template`, `context`): [`Block`](types.md#block)
+
+Adds a block to a `directive`'s blocks array
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `Context` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `id` | `string` | the block's id used to track the block |
+| `template` | (`context`: [`Accessor`](types.md#accessor)<`Context`\>) => [`Render`](types.md#render) | a factory function to render when the block is created or updated |
+| `context` | `Context` | a context that a block uses in the `template` |
+
+#### Returns
+
+[`Block`](types.md#block)
+
+#### Defined in
+
+[internal/core/index.ts:84](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L84)
 
 ___
 
@@ -88,7 +120,36 @@ Renders a component.
 
 #### Defined in
 
-[internal/core/index.ts:52](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L52)
+[internal/core/index.ts:52](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L52)
+
+___
+
+### directive
+
+▸ **directive**(`blocks`): [`Render`](types.md#render)
+
+Allows for conditional and list rendering with a Virtual DOM-like approach.
+This allows control flow customizability and cross-platform compatability, meaning the consuming API can be rendered in CSR, SSR, and SSG environments.
+
+**`See`**
+
+ - when and
+ - each for examples.
+ - block for details
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `blocks` | [`Accessor`](types.md#accessor)<[`Block`](types.md#block)[]\> | A factory function that returns an array of blocks to be rendered to the DOM; |
+
+#### Returns
+
+[`Render`](types.md#render)
+
+#### Defined in
+
+[internal/core/index.ts:74](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L74)
 
 ___
 
@@ -112,13 +173,13 @@ Renders an HTML element to the document.
 
 #### Defined in
 
-[internal/core/index.ts:25](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L25)
+[internal/core/index.ts:25](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L25)
 
 ___
 
 ### each
 
-▸ **each**<`TItem`\>(`«destructured»`, `renderItems`): [`Render`](types.md#render)
+▸ **each**<`TItem`\>(`«destructured»`, `renderItems`, `alt?`): [`Render`](types.md#render)
 
 Renders a list of items to the document.
 
@@ -136,6 +197,7 @@ Renders a list of items to the document.
 | › `items` | [`Accessor`](types.md#accessor)<`TItem`[]\> | - |
 | › `trackBy?` | [`Accessor`](types.md#accessor)<(`item`: `TItem`, `index`: `number`, `array`: `TItem`[]) => `any`\> | - |
 | `renderItems` | (`item`: [`Accessor`](types.md#accessor)<`TItem`\>, `index`: [`Accessor`](types.md#accessor)<`number`\>, `array`: [`Accessor`](types.md#accessor)<`TItem`[]\>) => [`Render`](types.md#render) | a function that returns a render instruction for each item |
+| `alt` | [`Render`](types.md#render) | a render instruction to render when the `items` array is empty |
 
 #### Returns
 
@@ -143,7 +205,7 @@ Renders a list of items to the document.
 
 #### Defined in
 
-[internal/core/index.ts:82](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L82)
+[internal/core/index.ts:107](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L107)
 
 ___
 
@@ -165,7 +227,7 @@ Renders a fragment, or a group of child nodes, to the document.
 
 #### Defined in
 
-[internal/core/index.ts:63](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L63)
+[internal/core/index.ts:63](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L63)
 
 ___
 
@@ -188,7 +250,7 @@ Adds an event listener to the consuming element
 
 #### Defined in
 
-[internal/core/index.ts:43](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L43)
+[internal/core/index.ts:43](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L43)
 
 ___
 
@@ -210,7 +272,7 @@ Renders a static text node to the document.
 
 #### Defined in
 
-[internal/core/index.ts:7](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L7)
+[internal/core/index.ts:7](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L7)
 
 ___
 
@@ -234,4 +296,4 @@ Conditionally renders content
 
 #### Defined in
 
-[internal/core/index.ts:73](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/core/index.ts#L73)
+[internal/core/index.ts:94](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/core/index.ts#L94)

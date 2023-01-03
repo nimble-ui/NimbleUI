@@ -1,4 +1,4 @@
-[API Docs - v0.1.0](../README.md) / types
+[API Docs - v0.2.0](../README.md) / types
 
 # Module: types
 
@@ -8,6 +8,7 @@
 
 - [Accessor](types.md#accessor)
 - [Attrs](types.md#attrs)
+- [Block](types.md#block)
 - [Component](types.md#component)
 - [LifecycleHooks](types.md#lifecyclehooks)
 - [Middleware](types.md#middleware)
@@ -38,7 +39,7 @@ A factory function that is used to access dynamic values.
 
 #### Defined in
 
-[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L5)
+[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L5)
 
 ___
 
@@ -72,7 +73,37 @@ An algebraic data type for declaring attributes.
 
 #### Defined in
 
-[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L10)
+[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L10)
+
+___
+
+### Block
+
+Ƭ **Block**: <T\>(`block`: <Context\>(`id`: `string`, `template`: (`context`: [`Accessor`](types.md#accessor)<`Context`\>) => [`Render`](types.md#render), `context`: `Context`) => `T`) => `T`
+
+#### Type declaration
+
+▸ <`T`\>(`block`): `T`
+
+##### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `block` | <Context\>(`id`: `string`, `template`: (`context`: [`Accessor`](types.md#accessor)<`Context`\>) => [`Render`](types.md#render), `context`: `Context`) => `T` |
+
+##### Returns
+
+`T`
+
+#### Defined in
+
+[internal/shared/types.ts:53](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L53)
 
 ___
 
@@ -102,7 +133,7 @@ ___
 
 #### Defined in
 
-[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L51)
+[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L51)
 
 ___
 
@@ -121,7 +152,7 @@ A representation component lifecycle hooks
 
 #### Defined in
 
-[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L18)
+[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L18)
 
 ___
 
@@ -154,7 +185,7 @@ A function to access a component's internal API.
 
 #### Defined in
 
-[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L49)
+[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L49)
 
 ___
 
@@ -181,13 +212,13 @@ A context for middleware to hook into components.
 
 #### Defined in
 
-[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L26)
+[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L26)
 
 ___
 
 ### Render
 
-Ƭ **Render**: <T\>(`render`: { `component`: <Props\>(`comp`: [`Component`](types.md#component)<`Props`\>, `props`: [`Accessor`](types.md#accessor)<`Props`\>) => `T` ; `dynamic`: (`text`: [`Accessor`](types.md#accessor)<`any`\>) => `T` ; `each`: <TItem\>(`items`: [`Accessor`](types.md#accessor)<`TItem`[]\>, `trackBy`: [`Accessor`](types.md#accessor)<(`item`: `TItem`, `index`: `number`, `array`: `TItem`[]) => `any`\>, `renderItem`: (`item`: [`Accessor`](types.md#accessor)<`TItem`\>, `index`: [`Accessor`](types.md#accessor)<`number`\>, `array`: [`Accessor`](types.md#accessor)<`TItem`[]\>) => [`Render`](types.md#render)) => `T` ; `element`: (`el`: `string`, `attrs`: [`Attrs`](types.md#attrs)[], `children`: [`Render`](types.md#render)[]) => `T` ; `fragment`: (`children`: [`Render`](types.md#render)[]) => `T` ; `text`: (`text`: `string`) => `T` ; `when`: (`cond`: [`Accessor`](types.md#accessor)<`any`\>, `then`: [`Render`](types.md#render), `alt`: [`Render`](types.md#render)) => `T`  }) => `T`
+Ƭ **Render**: <T\>(`render`: { `component`: <Props\>(`comp`: [`Component`](types.md#component)<`Props`\>, `props`: [`Accessor`](types.md#accessor)<`Props`\>) => `T` ; `directive`: (`blocks`: [`Accessor`](types.md#accessor)<[`Block`](types.md#block)[]\>) => `T` ; `dynamic`: (`text`: [`Accessor`](types.md#accessor)<`any`\>) => `T` ; `element`: (`el`: `string`, `attrs`: [`Attrs`](types.md#attrs)[], `children`: [`Render`](types.md#render)[]) => `T` ; `fragment`: (`children`: [`Render`](types.md#render)[]) => `T` ; `text`: (`text`: `string`) => `T`  }) => `T`
 
 #### Type declaration
 
@@ -207,12 +238,11 @@ A render instruction used for CSR or SSR.
 | :------ | :------ |
 | `render` | `Object` |
 | `render.component` | <Props\>(`comp`: [`Component`](types.md#component)<`Props`\>, `props`: [`Accessor`](types.md#accessor)<`Props`\>) => `T` |
+| `render.directive` | (`blocks`: [`Accessor`](types.md#accessor)<[`Block`](types.md#block)[]\>) => `T` |
 | `render.dynamic` | (`text`: [`Accessor`](types.md#accessor)<`any`\>) => `T` |
-| `render.each` | <TItem\>(`items`: [`Accessor`](types.md#accessor)<`TItem`[]\>, `trackBy`: [`Accessor`](types.md#accessor)<(`item`: `TItem`, `index`: `number`, `array`: `TItem`[]) => `any`\>, `renderItem`: (`item`: [`Accessor`](types.md#accessor)<`TItem`\>, `index`: [`Accessor`](types.md#accessor)<`number`\>, `array`: [`Accessor`](types.md#accessor)<`TItem`[]\>) => [`Render`](types.md#render)) => `T` |
 | `render.element` | (`el`: `string`, `attrs`: [`Attrs`](types.md#attrs)[], `children`: [`Render`](types.md#render)[]) => `T` |
 | `render.fragment` | (`children`: [`Render`](types.md#render)[]) => `T` |
 | `render.text` | (`text`: `string`) => `T` |
-| `render.when` | (`cond`: [`Accessor`](types.md#accessor)<`any`\>, `then`: [`Render`](types.md#render), `alt`: [`Render`](types.md#render)) => `T` |
 
 ##### Returns
 
@@ -220,4 +250,4 @@ A render instruction used for CSR or SSR.
 
 #### Defined in
 
-[internal/shared/types.ts:56](https://github.com/nimble-ui/NimbleUI/blob/63137c0/src/internal/shared/types.ts#L56)
+[internal/shared/types.ts:58](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L58)
