@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/nimble-ui/NimbleUI/tree/HEAD)
+
+[Full Changelog](https://github.com/nimble-ui/NimbleUI/compare/v0.0.25...HEAD)
+
+**Merged pull requests:**
+
+- feat: move control flow [\#5](https://github.com/nimble-ui/NimbleUI/pull/5) ([IRod22](https://github.com/IRod22))
+
 ## [v0.0.25](https://github.com/nimble-ui/NimbleUI/tree/v0.0.25) (2022-12-04)
 
 [Full Changelog](https://github.com/nimble-ui/NimbleUI/compare/9ef0b86ea5ee99e218c3c1ba4360b3224620b687...v0.0.25)

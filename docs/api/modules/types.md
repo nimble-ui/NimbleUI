@@ -1,4 +1,4 @@
-[API Docs - v0.2.0](../README.md) / types
+[API Docs - v0.2.1-nightly.1](../README.md) / types
 
 # Module: types
 
@@ -39,7 +39,7 @@ A factory function that is used to access dynamic values.
 
 #### Defined in
 
-[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L5)
+[internal/shared/types.ts:5](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L5)
 
 ___
 
@@ -73,7 +73,7 @@ An algebraic data type for declaring attributes.
 
 #### Defined in
 
-[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L10)
+[internal/shared/types.ts:10](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L10)
 
 ___
 
@@ -103,7 +103,7 @@ ___
 
 #### Defined in
 
-[internal/shared/types.ts:53](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L53)
+[internal/shared/types.ts:53](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L53)
 
 ___
 
@@ -133,7 +133,7 @@ ___
 
 #### Defined in
 
-[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L51)
+[internal/shared/types.ts:51](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L51)
 
 ___
 
@@ -152,7 +152,7 @@ A representation component lifecycle hooks
 
 #### Defined in
 
-[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L18)
+[internal/shared/types.ts:18](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L18)
 
 ___
 
@@ -185,7 +185,7 @@ A function to access a component's internal API.
 
 #### Defined in
 
-[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L49)
+[internal/shared/types.ts:49](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L49)
 
 ___
 
@@ -212,7 +212,7 @@ A context for middleware to hook into components.
 
 #### Defined in
 
-[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L26)
+[internal/shared/types.ts:26](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L26)
 
 ___
 
@@ -250,4 +250,4 @@ A render instruction used for CSR or SSR.
 
 #### Defined in
 
-[internal/shared/types.ts:58](https://github.com/nimble-ui/NimbleUI/blob/104ff1f/src/internal/shared/types.ts#L58)
+[internal/shared/types.ts:58](https://github.com/nimble-ui/NimbleUI/blob/de15fef/src/internal/shared/types.ts#L58)

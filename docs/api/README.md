@@ -1,6 +1,6 @@
-API Docs - v0.2.0
+API Docs - v0.2.1-nightly.1
 
-# API Docs - v0.2.0
+# API Docs - v0.2.1-nightly.1
 
 ## Table of contents
 
