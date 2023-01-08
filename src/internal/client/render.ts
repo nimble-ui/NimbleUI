@@ -146,6 +146,7 @@ export function render(
             return {
                 render() {
                     let newBlocks = blocks(), discard: BlockInstance<any>[] = [], completed: BlockInstance<any>[] = []
+                    console.log({completed, discard})
                     for (const block of currentBlocks) {
                         if (newBlocks.length == 0) {
                             discard = [...discard, ...currentBlocks]
@@ -157,6 +158,7 @@ export function render(
                             completed = [...completed, block]
                             newBlocks = newBlocks.slice(1)
                         }
+                        console.log({completed, discard})
                     }
                     for (const block of newBlocks) {
                         if (discard.some(discarded => discarded.id == id(block))) {
@@ -167,6 +169,7 @@ export function render(
                             const i = block<BlockInstance<any>>((id, template, context) => new BlockInstance(id, template, context))
                             completed = [...completed, i]
                         }
+                        console.log({completed, discard})
                     }
                     discard.forEach(d => d.render.unmount())
                     currentBlocks = completed
